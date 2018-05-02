@@ -45,12 +45,16 @@ class PLYObject:
 		Wendet eine Transformation (als 3x3/3x4/4x3/4x4-ndarray) auf die Knoten des aktuell geladenen Objektes an.
 		"""
 		ver = self.getVertices()
+
 		if mat.shape[1] == 4:
 			ver = numpy.concatenate((ver, numpy.ones((1, ver.shape[1]))))
-		ver = ???  # TODO: Matrix auf Knotenarray anwenden
-		if mat.shape[???] == ???:  # TODO
+
+		ver = mat.dot(ver)
+
+		if mat.shape[1] == 4:
 			ver = ver[:3]
-		# TODO: Veraenderte Knoten ins Objekt uebertragen
+
+		self.setVertices(ver)
 
 	def translate(self, v):
 		"""
