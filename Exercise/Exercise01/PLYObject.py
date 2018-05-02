@@ -60,25 +60,51 @@ class PLYObject:
 		"""
 		Fuehrt eine Verschiebung um den Vektor v (ndarray) durch.
 		"""
-		# TODO
+		if len(v) < 3:
+			v = v + [0] * (3 - len(v))
+
+		mat = numpy.matrix([[1, 0, 0, v[0]],
+							[0, 1, 0, v[1]],
+							[0, 0, 1, v[2]],
+							[0, 0, 0, 1]])
+
+		self.apply(mat)
 
 	def scale(self, f):
 		"""
 		Skaliert das Objekt um den Faktor f ausgehend vom Koordinatenursprung.
 		"""
-		# TODO
+		mat = numpy.matrix([[f, 0, 0, 0],
+							[0, f, 0, 0],
+							[0, 0, f, 0],
+							[0, 0, 0, 1]])
+
+		self.apply(mat)
 
 	def rotateX(self, alpha):
 		"""
 		Fuehrt eine Drehung um die x-Achse um den Winkel alpha (BogenmaB) durch. (Rechte-Hand-Regel im Rechtssystem)
 		"""
-		# TODO
+		ca = numpy.cos(alpha)
+		sa = numpy.sin(alpha)
+
+		mat = numpy.matrix([[1, 0, 0, 0],
+							[0, ca, -sa, 0],
+							[0, sa, ca, 0],
+							[0, 0, 0, 1]])
+
+		self.apply(mat)
 
 	def flipX(self):
 		"""
 		Fuehrt eine Spiegelung an der Ebene durch, welche im Ursprung senkrecht zur x-Achse steht.
 		"""
-		# TODO
+		mat = numpy.matrix([[-1, 0, 0, 0],
+							[0, 1, 0, 0],
+							[0, 0, 1, 0],
+							[0, 0, 0, 1]])
+
+		self.apply(mat)
 
 
 # Leitet eine Testumgebung ein. Der folgende Code wird bei der Korrektur nicht ausgefuehrt(!) und kann daher beliebig abgeaendert werden.
