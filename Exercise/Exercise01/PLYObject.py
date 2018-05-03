@@ -53,7 +53,7 @@ class PLYObject:
 
 		ver = mat.dot(ver)
 
-		if mat.shape[1] == 4:
+		if ver.shape[0] == 4:
 			ver = ver[:3]
 
 		self.setVertices(ver)
