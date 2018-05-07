@@ -109,6 +109,7 @@ def main(args=None):
 	)
 	t1 = time.perf_counter()
 	print('Took {:.4f} s'.format(t1 - t0))
+	print('{:d} vertices'.format(len(vertices)))
 
 	plyVertices = np.array(vertices, dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4'), ('red', 'u1'), ('green', 'u1'), ('blue', 'u1')])
 	plyVertices = ply.PlyElement.describe(plyVertices, 'vertex')
