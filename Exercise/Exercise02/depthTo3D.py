@@ -9,9 +9,9 @@ import numpy as np
 import plyfile as ply
 
 def depthMapMatrix(fx, fy, cx, cy, imgDepth, imgColor):
-	intrinsicCamMatrix = np.matrix([[fx, 0, cx],
-									[0, fy, cy],
-									[0, 0, 1]], dtype=np.float)
+	intrinsicCamMatrix = np.array([[fx, 0, cx],
+								   [0, fy, cy],
+								   [0, 0, 1]], dtype=np.float)
 
 	# Matrix could also be directly written as:
 	# [[1/fx	0		-cx/fx]
@@ -35,7 +35,7 @@ def depthMapMatrix(fx, fy, cx, cy, imgDepth, imgColor):
 	verticesZ[verticesZ == 0.0] = 1.0
 	vertices[:, :2] *= verticesZ
 
-	vertices = np.array(vertices.dot(invIntrinsicCamMatrix.T))
+	vertices = vertices.dot(invIntrinsicCamMatrix.T)
 	vertices = [(*v, *c[::-1]) for v, c in zip(vertices, imgColor)]
 
 	return vertices
