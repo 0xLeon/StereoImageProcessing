@@ -8,7 +8,7 @@ import cv2 as cv
 import numpy as np
 import plyfile as ply
 
-def depthMapMatrix(fx, fy, cx, cy, imgDepth, imgColor):
+def depthMapMatrix(fx, fy, cx, cy, imgDepth, imgColor, skipInvalid):
 	intrinsicCamMatrix = np.array([[fx, 0, cx],
 								   [0, fy, cy],
 								   [0, 0, 1]], dtype=np.float)
@@ -35,17 +35,22 @@ def depthMapMatrix(fx, fy, cx, cy, imgDepth, imgColor):
 	verticesZ[verticesZ == 0.0] = 1.0
 	vertices[:, :2] *= verticesZ
 
+	keepInvalid = not skipInvalid
 	vertices = vertices.dot(invIntrinsicCamMatrix.T)
-	vertices = [(*v, *c[::-1]) for v, c in zip(vertices, imgColor)]
+	vertices = [(*v, *c[::-1]) for v, c in zip(vertices, imgColor) if keepInvalid or v[2] != 0.0]
 
 	return vertices
 
-def depthMapLoop(fx, fy, cx, cy, imgDepth, imgColor):
+def depthMapLoop(fx, fy, cx, cy, imgDepth, imgColor, skipInvalid):
 	vertices = []
 
 	for v in range(imgDepth.shape[0]):
 		for u in range(imgDepth.shape[1]):
 			z = float(imgDepth[v, u])
+
+			if skipInvalid and z == 0.0:
+				continue
+
 			x = ((u - cx) * z) / fx
 			y = ((v - cy) * z) / fy
 
@@ -63,7 +68,7 @@ def main(args=None):
 	parser.add_argument('--fy', type=float, default=5.8724220649505514e+02)
 	parser.add_argument('--cx', type=float, default=3.1076280589210484e+02)
 	parser.add_argument('--cy', type=float, default=2.2887144980135292e+02)
-	parser.add_argument('--ignore_invalid', default=False, action='store_true')
+	parser.add_argument('--skipinvalid', default=False, action='store_true')
 	parser.add_argument('DEPTHFILE', nargs='?', default='depth.tif')
 	parser.add_argument('COLORFILE', nargs='?', default='color.tif')
 	parser.add_argument('PLYFILE', nargs='?', default='output.ply')
@@ -90,7 +95,7 @@ def main(args=None):
 		raise ValueError('Dimensions of depth channel and color channel mismatch: {} != {}'.format(imgDepth.shape[:2], imgColor.shape[:2]))
 
 	print('Operation mode {:s}'.format(args.mode))
-	print('{:s} invalid depth values'.format('Ignoring' if args.ignore_invalid else 'Including'))
+	print('{:s} invalid depth values'.format('Skipping' if args.skipinvalid else 'Including'))
 
 	t0 = time.perf_counter()
 	vertices = _mode_to_func[args.mode](
@@ -100,6 +105,7 @@ def main(args=None):
 		args.cy,
 		imgDepth,
 		imgColor,
+		args.skipinvalid,
 	)
 	t1 = time.perf_counter()
 	print('Took {:.4f} s'.format(t1 - t0))
