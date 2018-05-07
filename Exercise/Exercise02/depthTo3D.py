@@ -62,8 +62,13 @@ def main(args=None):
 	if args is None:
 		args = sys.argv[1:]
 
+	_mode_to_func = {
+		'matrix': depthMapMatrix,
+		'loop': depthMapLoop,
+	}
+
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--mode', default='matrix', choices=['matrix', 'loop'])
+	parser.add_argument('--mode', default='matrix', choices=[*_mode_to_func.keys()])
 	parser.add_argument('--fx', type=float, default=5.8818670481438744e+02)
 	parser.add_argument('--fy', type=float, default=5.8724220649505514e+02)
 	parser.add_argument('--cx', type=float, default=3.1076280589210484e+02)
@@ -73,11 +78,6 @@ def main(args=None):
 	parser.add_argument('COLORFILE', nargs='?', default='color.tif')
 	parser.add_argument('PLYFILE', nargs='?', default='output.ply')
 	args = parser.parse_args(args)
-
-	_mode_to_func = {
-		'matrix': depthMapMatrix,
-		'loop': depthMapLoop,
-	}
 
 	print('Reading depth channel file {:s}'.format(args.DEPTHFILE))
 	imgDepth = cv.imread(args.DEPTHFILE, cv.IMREAD_UNCHANGED)
