@@ -99,3 +99,10 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# VSCode
+.vscode/*
+
+# custon
+*_*.ply
+*output.ply
