@@ -32,14 +32,17 @@ def depthMapMatrix(fx, fy, cx, cy, imgDepth, imgColor, skipInvalid):
 	colorShape = imgColor.shape
 	imgColor.shape = (colorShape[0] * colorShape[1], verticesShape[2])
 
+	if skipInvalid:
+		vertices = vertices[vertices[:, 2] > 0.0]
+
 	verticesZ = np.repeat(vertices[:, 2], 2).reshape((-1, 2))
 	verticesZ[verticesZ == 0.0] = 1.0
 	vertices[:, :2] *= verticesZ
 
-	keepInvalid = not skipInvalid
 	vertices = vertices.dot(invIntrinsicCamMatrix.T)
-	# vertices = [(*v, *c[::-1]) for v, c in zip(vertices, imgColor) if keepInvalid or v[2] != 0.0]
-	vertices = [tuple(itertools.chain(v, c[::-1])) for v, c in zip(vertices, imgColor) if keepInvalid or v[2] != 0.0]
+
+	# vertices = [(*v, *c[::-1]) for v, c in zip(vertices, imgColor)]
+	vertices = [tuple(itertools.chain(v, c[::-1])) for v, c in zip(vertices, imgColor)]
 
 	return vertices
 
