@@ -33,7 +33,9 @@ def depthMapMatrix(fx, fy, cx, cy, imgDepth, imgColor, skipInvalid):
 	imgColor.shape = (colorShape[0] * colorShape[1], verticesShape[2])
 
 	if skipInvalid:
-		vertices = vertices[vertices[:, 2] > 0.0]
+		verticesFilter = vertices[:, 2] > 0.0
+		vertices = vertices[verticesFilter]
+		imgColor = imgColor[verticesFilter]
 
 	verticesZ = np.repeat(vertices[:, 2], 2).reshape((-1, 2))
 	verticesZ[verticesZ == 0.0] = 1.0
