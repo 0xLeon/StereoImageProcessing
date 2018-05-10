@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import itertools
 import sys
 import time
 
@@ -37,7 +38,8 @@ def depthMapMatrix(fx, fy, cx, cy, imgDepth, imgColor, skipInvalid):
 
 	keepInvalid = not skipInvalid
 	vertices = vertices.dot(invIntrinsicCamMatrix.T)
-	vertices = [(*v, *c[::-1]) for v, c in zip(vertices, imgColor) if keepInvalid or v[2] != 0.0]
+	# vertices = [(*v, *c[::-1]) for v, c in zip(vertices, imgColor) if keepInvalid or v[2] != 0.0]
+	vertices = [tuple(itertools.chain(v, c[::-1])) for v, c in zip(vertices, imgColor) if keepInvalid or v[2] != 0.0]
 
 	return vertices
 
@@ -54,7 +56,8 @@ def depthMapLoop(fx, fy, cx, cy, imgDepth, imgColor, skipInvalid):
 			x = ((u - cx) * z) / fx
 			y = ((v - cy) * z) / fy
 
-			vertices.append((x, y, z, *imgColor[v, u][::-1]))
+			# vertices.append((x, y, z, *imgColor[v, u][::-1]))
+			vertices.append(tuple(itertools.chain((x, y, z), imgColor[v, u][::-1])))
 
 	return vertices
 
@@ -68,7 +71,7 @@ def main(args=None):
 	}
 
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--mode', default='matrix', choices=[*_mode_to_func.keys()])
+	parser.add_argument('--mode', default='matrix', choices=list(_mode_to_func.keys()))
 	parser.add_argument('--fx', type=float, default=5.8818670481438744e+02)
 	parser.add_argument('--fy', type=float, default=5.8724220649505514e+02)
 	parser.add_argument('--cx', type=float, default=3.1076280589210484e+02)
