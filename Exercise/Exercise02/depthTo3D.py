@@ -37,8 +37,11 @@ def depthMapMatrix(fx, fy, cx, cy, imgDepth, imgColor, skipInvalid):
 		vertices = vertices[verticesFilter]
 		imgColor = imgColor[verticesFilter]
 
-	verticesZ = np.repeat(vertices[:, 2], 2).reshape((-1, 2))
-	verticesZ[verticesZ == 0.0] = 1.0
+		verticesZ = np.repeat(vertices[:, 2], 2).reshape((-1, 2))
+	else:
+		verticesZ = np.repeat(vertices[:, 2], 2).reshape((-1, 2))
+		verticesZ[verticesZ == 0.0] = 1.0
+
 	vertices[:, :2] *= verticesZ
 
 	vertices = vertices.dot(invIntrinsicCamMatrix.T)
