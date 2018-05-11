@@ -85,9 +85,9 @@ def main(args=None):
 	parser.add_argument('--cx', type=float, default=3.1076280589210484e+02, help='Horzontal principal point correction')
 	parser.add_argument('--cy', type=float, default=2.2887144980135292e+02, help='Vertical principal point correction')
 	parser.add_argument('--skipinvalid', default=False, action='store_true', help='Flag controlling the exclusion of points with depth value of zero, defaults to False')
+	parser.add_argument('--plyfile', default='output.ply', help='Output PLY file path, defaults to output.ply')
 	parser.add_argument('DEPTHFILE', nargs='?', default='depth.tif', help='Input depth channel file path, defaults to depth.tif')
 	parser.add_argument('COLORFILE', nargs='?', default='color.tif', help='Input color channel file path, defaults to color.tif')
-	parser.add_argument('PLYFILE', nargs='?', default='output.ply', help='Output PLY file path, defaults to output.ply')
 	args = parser.parse_args(args)
 
 	print('Reading depth channel file {:s}'.format(args.DEPTHFILE))
@@ -125,8 +125,8 @@ def main(args=None):
 	plyVertices = np.array(vertices, dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4'), ('red', 'u1'), ('green', 'u1'), ('blue', 'u1')])
 	plyVertices = ply.PlyElement.describe(plyVertices, 'vertex')
 
-	print('Writing PLY data to {:s}'.format(args.PLYFILE))
-	ply.PlyData([plyVertices]).write(args.PLYFILE)
+	print('Writing PLY data to {:s}'.format(args.plyfile))
+	ply.PlyData([plyVertices]).write(args.plyfile)
 
 	return 0
 
