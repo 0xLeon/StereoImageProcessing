@@ -106,3 +106,4 @@ ENV/
 # custon
 *_*.ply
 *output.ply
+**/output/*
