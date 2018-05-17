@@ -148,8 +148,8 @@ def main_cli(args=None):
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--threads', default=4, type=int, help='Number of threads used for image processing, defaults to 4')
-	parser.add_argument('--patternsize', default='9,6', help='Number of grid points in both dimensions, comma separated, defaults to 9,6')
-	parser.add_argument('--squaresize', default=1.0, type=float, help='Size of one square in the chessboard [mm]')
+	parser.add_argument('--patternsize', default='6,4', help='Number of grid points in both dimensions, comma separated, defaults to 6,4')
+	parser.add_argument('--squaresize', default=150.0, type=float, help='Size of one square in the chessboard [mm], defaults to 150')
 	parser.add_argument('--no-savecalib', default=False, action='store_true', help='Don\'t save camera matrix and distortion coefficients to file sytem')
 	parser.add_argument('--readcalib', default='', help='Instead of generating calibration data from images, read this file saved before via --savecalib')
 	parser.add_argument('--debugoutput', default=False, action='store_true', help='Save additional data to file system along with undistorted images')
