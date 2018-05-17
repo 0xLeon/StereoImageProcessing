@@ -150,7 +150,7 @@ def main_cli(args=None):
 	parser.add_argument('--threads', default=4, type=int, help='Number of threads used for image processing, defaults to 4')
 	parser.add_argument('--patternsize', default='9,6', help='Number of grid points in both dimensions, comma separated, defaults to 9,6')
 	parser.add_argument('--squaresize', default=1.0, type=float, help='Size of one square in the chessboard [mm]')
-	parser.add_argument('--savecalib', default=False, action='store_true', help='Save camera matrix and distortion coefficients to file sytem')
+	parser.add_argument('--no-savecalib', default=False, action='store_true', help='Don\'t save camera matrix and distortion coefficients to file sytem')
 	parser.add_argument('--readcalib', default='', help='Instead of generating calibration data from images, read this file saved before via --savecalib')
 	parser.add_argument('--debugoutput', default=False, action='store_true', help='Save additional data to file system along with undistorted images')
 	parser.add_argument('--output', default='./output/', help='Output target folder, will be created if not existing; defaults to ./output/')
@@ -160,7 +160,7 @@ def main_cli(args=None):
 	images = args.images if len(args.images) > 1 else glob.glob(args.images[0])
 	patternsize = tuple(map(int, args.patternsize.split(',')))
 
-	main(images, patternsize, args.squaresize, args.savecalib, args.readcalib, args.debugoutput, args.threads, args.output)
+	main(images, patternsize, args.squaresize, not args.no_savecalib, args.readcalib, args.debugoutput, args.threads, args.output)
 
 if __name__ == '__main__':
 	main_cli()
