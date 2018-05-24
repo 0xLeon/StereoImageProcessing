@@ -145,6 +145,104 @@ class PLYObject:
 		return tuple(itertools.chain(result, (numpy.abs(delta).mean(),)))
 
 	@staticmethod
+	def _classOneSample(f):
+		freq = float(f)
+
+		sin_pi_third = numpy.sin(numpy.pi / 3.0)
+		cos_pi_third = numpy.cos(numpy.pi / 3.0)
+		sin_pi_third_third = sin_pi_third / 3.0
+
+		vertices = []
+
+		for r in range(f + 1):
+			r_cos_pi_third = r * cos_pi_third
+
+			y = (r * sin_pi_third / freq) - sin_pi_third_third
+
+			for c in range(f - r + 1):
+				x = ((r_cos_pi_third + c) / freq) - 0.5
+
+				vertices.append([x, y, 0.0, 1.0])
+
+		return numpy.array(vertices)
+
+	@staticmethod
+	def _getTriCorners(tri):
+		return numpy.array([
+			[0.0, tri.T[1].max(), 0.0, 1.0],
+			[tri.T[0].max(), tri.T[1].min(), 0.0, 1.0],
+			[tri.T[0].min(), tri.T[1].min(), 0.0, 1.0],
+		])
+
+	@staticmethod
+	def from_geosphere(sphereParams, frequency=5):
+		sin_phi = 2.0 / numpy.sqrt(5.0)
+		cos_phi = 1.0 / numpy.sqrt(5.0)
+
+		zero_four_pi = 0.4 * numpy.pi
+		zero_eight_pi = 0.8 * numpy.pi
+
+		sin_phi_sin_zero_four_pi = sin_phi * numpy.sin(zero_four_pi)
+		sin_phi_sin_zero_eight_pi = sin_phi * numpy.sin(zero_eight_pi)
+		sin_phi_cos_zero_four_pi = sin_phi * numpy.cos(zero_four_pi)
+		sin_phi_cos_zero_eight_pi = sin_phi * numpy.cos(zero_eight_pi)
+
+		polyhedronVertices = numpy.array([
+			[0., 0., 1., 1.],
+			[sin_phi, 0., cos_phi, 1.],
+			[sin_phi_cos_zero_four_pi, sin_phi_sin_zero_four_pi, cos_phi, 1.],
+			[sin_phi_cos_zero_eight_pi, sin_phi_sin_zero_eight_pi, cos_phi, 1.],
+			[sin_phi_cos_zero_eight_pi, -sin_phi_sin_zero_eight_pi, cos_phi, 1.],
+			[sin_phi_cos_zero_four_pi, -sin_phi_sin_zero_four_pi, cos_phi, 1.],
+			[-sin_phi_cos_zero_eight_pi, -sin_phi_sin_zero_eight_pi, -cos_phi, 1.],
+			[-sin_phi_cos_zero_eight_pi, sin_phi_sin_zero_eight_pi, -cos_phi, 1.],
+			[-sin_phi_cos_zero_four_pi, sin_phi_sin_zero_four_pi, -cos_phi, 1.],
+			[-sin_phi, 0., -cos_phi, 1.],
+			[-sin_phi_cos_zero_four_pi, -sin_phi_sin_zero_four_pi, -cos_phi, 1.],
+			[0., 0., -1., 1.],
+		])
+		polyhedronFaces = [
+			[1, 2, 0],
+			[2, 3, 0],
+			[3, 4, 0],
+			[4, 5, 0],
+			[5, 1, 0],
+			[5, 6, 1],
+			[1, 7, 2],
+			[2, 8, 3],
+			[3, 9, 4],
+			[4, 10, 5],
+			[1, 6, 7],
+			[2, 7, 8],
+			[3, 8, 9],
+			[4, 9, 10],
+			[5, 10, 6],
+			[6, 11, 7],
+			[7, 11, 8],
+			[8, 11, 9],
+			[9, 11, 10],
+			[10, 11, 6],
+		]
+
+		vertices = []
+
+		masterTri = PLYObject._classOneSample(frequency)
+		masterTriCorners = PLYObject._getTriCorners(masterTri)
+
+		for face in polyhedronFaces:
+			target = numpy.array([polyhedronVertices[i] for i in face])
+			transform, _, _, _ = numpy.linalg.lstsq(masterTriCorners, target, None)
+
+			tri = masterTri.dot(transform)[:, :3]
+			tri = tri / numpy.linalg.norm(tri, axis=1)[:, numpy.newaxis]
+			tri = sphereParams[3] * tri + sphereParams[:3]
+
+			for vert in tri:
+				vertices.append(tuple(vert))
+
+		return PLYObject.from_vertices(vertices)
+
+	@staticmethod
 	def from_sphere(sphereParams, h=30, v=72):
 		vertices = []
 
