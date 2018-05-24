@@ -3,7 +3,7 @@
 import itertools
 
 import plyfile
-import numpy
+import numpy as np
 import scipy.optimize
 
 class PLYObject:
@@ -29,7 +29,7 @@ class PLYObject:
 		"""
 		Liefert die n Knoten des Objekts als 3xn-ndarray.
 		"""
-		return numpy.asarray([self.plydata['vertex'][dim] for dim in ('x', 'y', 'z')])
+		return np.asarray([self.plydata['vertex'][dim] for dim in ('x', 'y', 'z')])
 
 	def setVertices(self, vertices):
 		"""
@@ -52,7 +52,7 @@ class PLYObject:
 		ver = self.getVertices()
 
 		if mat.shape[1] == 4:
-			ver = numpy.concatenate((ver, numpy.ones((1, ver.shape[1]))))
+			ver = np.concatenate((ver, np.ones((1, ver.shape[1]))))
 
 		ver = mat.dot(ver)
 
@@ -68,10 +68,10 @@ class PLYObject:
 		if len(v) < 3:
 			v = v + [0] * (3 - len(v))
 
-		mat = numpy.matrix([[1, 0, 0, v[0]],
-							[0, 1, 0, v[1]],
-							[0, 0, 1, v[2]],
-							[0, 0, 0, 1]])
+		mat = np.matrix([[1, 0, 0, v[0]],
+						 [0, 1, 0, v[1]],
+						 [0, 0, 1, v[2]],
+						 [0, 0, 0, 1]])
 
 		self.apply(mat)
 
@@ -79,10 +79,10 @@ class PLYObject:
 		"""
 		Skaliert das Objekt um den Faktor f ausgehend vom Koordinatenursprung.
 		"""
-		mat = numpy.matrix([[f, 0, 0, 0],
-							[0, f, 0, 0],
-							[0, 0, f, 0],
-							[0, 0, 0, 1]])
+		mat = np.matrix([[f, 0, 0, 0],
+						 [0, f, 0, 0],
+						 [0, 0, f, 0],
+						 [0, 0, 0, 1]])
 
 		self.apply(mat)
 
@@ -90,13 +90,13 @@ class PLYObject:
 		"""
 		Fuehrt eine Drehung um die x-Achse um den Winkel alpha (BogenmaB) durch. (Rechte-Hand-Regel im Rechtssystem)
 		"""
-		ca = numpy.cos(alpha)
-		sa = numpy.sin(alpha)
+		ca = np.cos(alpha)
+		sa = np.sin(alpha)
 
-		mat = numpy.matrix([[1, 0, 0, 0],
-							[0, ca, -sa, 0],
-							[0, sa, ca, 0],
-							[0, 0, 0, 1]])
+		mat = np.matrix([[1, 0, 0, 0],
+						 [0, ca, -sa, 0],
+						 [0, sa, ca, 0],
+						 [0, 0, 0, 1]])
 
 		self.apply(mat)
 
@@ -104,10 +104,10 @@ class PLYObject:
 		"""
 		Fuehrt eine Spiegelung an der Ebene durch, welche im Ursprung senkrecht zur x-Achse steht.
 		"""
-		mat = numpy.matrix([[-1, 0, 0, 0],
-							[0, 1, 0, 0],
-							[0, 0, 1, 0],
-							[0, 0, 0, 1]])
+		mat = np.matrix([[-1, 0, 0, 0],
+						 [0, 1, 0, 0],
+						 [0, 0, 1, 0],
+						 [0, 0, 0, 1]])
 
 		self.apply(mat)
 
@@ -116,7 +116,7 @@ class PLYObject:
 		if dtype is None:
 			dtype = [('x', 'f4'), ('y', 'f4'), ('z', 'f4')]
 
-		plyVertices = numpy.array(vertices, dtype=dtype)
+		plyVertices = np.array(vertices, dtype=dtype)
 		plyVertices = plyfile.PlyElement.describe(plyVertices, 'vertex')
 
 		plyObject = PLYObject()
@@ -125,13 +125,13 @@ class PLYObject:
 		return plyObject
 
 	def fitSphere(self):
-		vertices = self.getVertices() # type: numpy.ndarray
+		vertices = self.getVertices() # type: np.ndarray
 		centerEstimate = vertices.T.mean(axis=0)
-		radiusEstimate = numpy.linalg.norm(centerEstimate - vertices.T[0])
-		sphereParams = numpy.concatenate((centerEstimate, [radiusEstimate]))
+		radiusEstimate = np.linalg.norm(centerEstimate - vertices.T[0])
+		sphereParams = np.concatenate((centerEstimate, [radiusEstimate]))
 
 		def errorFuncSphere(sphereParams, verticesT):
-			return numpy.linalg.norm(verticesT - sphereParams[:3], axis=1) - sphereParams[3]
+			return np.linalg.norm(verticesT - sphereParams[:3], axis=1) - sphereParams[3]
 
 		result, status = scipy.optimize.leastsq(errorFuncSphere, sphereParams, args=(vertices.T,))
 
@@ -140,17 +140,17 @@ class PLYObject:
 
 		delta = errorFuncSphere(result, vertices.T)
 
-		return tuple(itertools.chain(result, (numpy.abs(delta).mean(),)))
+		return tuple(itertools.chain(result, (np.abs(delta).mean(),)))
 
 	def fitPlane(self):
-		vertices = self.getVertices() # type: numpy.ndarray
-		samplePoints = vertices.T[numpy.random.choice(vertices.T.shape[0], 3, replace=False), :]
-		normal = numpy.cross(samplePoints[2] - samplePoints[0], samplePoints[1] - samplePoints[0])
+		vertices = self.getVertices() # type: np.ndarray
+		samplePoints = vertices.T[np.random.choice(vertices.T.shape[0], 3, replace=False), :]
+		normal = np.cross(samplePoints[2] - samplePoints[0], samplePoints[1] - samplePoints[0])
 		d = (normal * samplePoints[0]).sum()
-		planeParams = numpy.concatenate((normal, [d]))
+		planeParams = np.concatenate((normal, [d]))
 
 		def errorFuncPlane(planeParams, verticesT):
-			return (verticesT.dot(planeParams[:3]) + planeParams[3]) / numpy.linalg.norm(planeParams[:3])
+			return (verticesT.dot(planeParams[:3]) + planeParams[3]) / np.linalg.norm(planeParams[:3])
 
 		result, status = scipy.optimize.leastsq(errorFuncPlane, planeParams, args=(vertices.T,))
 
@@ -160,22 +160,22 @@ class PLYObject:
 		result = result / -result[3]
 		delta = errorFuncPlane(result, vertices.T)
 
-		return tuple(itertools.chain(result[:3], (numpy.abs(delta).mean(),)))
+		return tuple(itertools.chain(result[:3], (np.abs(delta).mean(),)))
 
 	@classmethod
 	def generate_geosphere(cls, sphereParams, frequency=5):
-		sin_phi = 2.0 / numpy.sqrt(5.0)
-		cos_phi = 1.0 / numpy.sqrt(5.0)
+		sin_phi = 2.0 / np.sqrt(5.0)
+		cos_phi = 1.0 / np.sqrt(5.0)
 
-		zero_four_pi = 0.4 * numpy.pi
-		zero_eight_pi = 0.8 * numpy.pi
+		zero_four_pi = 0.4 * np.pi
+		zero_eight_pi = 0.8 * np.pi
 
-		sin_phi_sin_zero_four_pi = sin_phi * numpy.sin(zero_four_pi)
-		sin_phi_sin_zero_eight_pi = sin_phi * numpy.sin(zero_eight_pi)
-		sin_phi_cos_zero_four_pi = sin_phi * numpy.cos(zero_four_pi)
-		sin_phi_cos_zero_eight_pi = sin_phi * numpy.cos(zero_eight_pi)
+		sin_phi_sin_zero_four_pi = sin_phi * np.sin(zero_four_pi)
+		sin_phi_sin_zero_eight_pi = sin_phi * np.sin(zero_eight_pi)
+		sin_phi_cos_zero_four_pi = sin_phi * np.cos(zero_four_pi)
+		sin_phi_cos_zero_eight_pi = sin_phi * np.cos(zero_eight_pi)
 
-		polyhedronVertices = numpy.array([
+		polyhedronVertices = np.array([
 			[0., 0., 1., 1.],
 			[sin_phi, 0., cos_phi, 1.],
 			[sin_phi_cos_zero_four_pi, sin_phi_sin_zero_four_pi, cos_phi, 1.],
@@ -218,11 +218,11 @@ class PLYObject:
 		masterTriCorners = cls._getTriCorners(masterTri)
 
 		for face in polyhedronFaces:
-			target = numpy.array([polyhedronVertices[i] for i in face])
-			transform, _, _, _ = numpy.linalg.lstsq(masterTriCorners, target, -1.0)
+			target = np.array([polyhedronVertices[i] for i in face])
+			transform, _, _, _ = np.linalg.lstsq(masterTriCorners, target, -1.0)
 
 			tri = masterTri.dot(transform)[:, :3]
-			tri = tri / numpy.linalg.norm(tri, axis=1)[:, numpy.newaxis]
+			tri = tri / np.linalg.norm(tri, axis=1)[:, np.newaxis]
 			tri = sphereParams[3] * tri + sphereParams[:3]
 
 			for vert in tri:
@@ -234,22 +234,22 @@ class PLYObject:
 	def generate_sphere(cls, sphereParams, h=30, v=72):
 		vertices = []
 
-		pi_h = numpy.pi / h
-		two_pi_v = 2 * numpy.pi / v
+		pi_h = np.pi / h
+		two_pi_v = 2 * np.pi / v
 
 		for m in range(0, h):
 			pi_h_m = pi_h * m
-			sin_pi_h_m = numpy.sin(pi_h_m)
-			cos_pi_h_m = numpy.cos(pi_h_m)
+			sin_pi_h_m = np.sin(pi_h_m)
+			cos_pi_h_m = np.cos(pi_h_m)
 
 			for n in range(0, v):
 				two_pi_v_n = two_pi_v * n
 
-				x = sin_pi_h_m * numpy.cos(two_pi_v_n)
-				y = sin_pi_h_m * numpy.sin(two_pi_v_n)
+				x = sin_pi_h_m * np.cos(two_pi_v_n)
+				y = sin_pi_h_m * np.sin(two_pi_v_n)
 				z = cos_pi_h_m
 
-				vertices.append(tuple((numpy.array([x, y, z]) * sphereParams[3]) + sphereParams[:3]))
+				vertices.append(tuple((np.array([x, y, z]) * sphereParams[3]) + sphereParams[:3]))
 
 		return cls.from_vertices(vertices)
 
@@ -275,8 +275,8 @@ class PLYObject:
 	def _classOneSample(f):
 		freq = float(f)
 
-		sin_pi_third = numpy.sin(numpy.pi / 3.0)
-		cos_pi_third = numpy.cos(numpy.pi / 3.0)
+		sin_pi_third = np.sin(np.pi / 3.0)
+		cos_pi_third = np.cos(np.pi / 3.0)
 		sin_pi_third_third = sin_pi_third / 3.0
 
 		vertices = []
@@ -291,11 +291,11 @@ class PLYObject:
 
 				vertices.append([x, y, 0.0, 1.0])
 
-		return numpy.array(vertices)
+		return np.array(vertices)
 
 	@staticmethod
 	def _getTriCorners(tri):
-		return numpy.array([
+		return np.array([
 			[0.0, tri.T[1].max(), 0.0, 1.0],
 			[tri.T[0].max(), tri.T[1].min(), 0.0, 1.0],
 			[tri.T[0].min(), tri.T[1].min(), 0.0, 1.0],
