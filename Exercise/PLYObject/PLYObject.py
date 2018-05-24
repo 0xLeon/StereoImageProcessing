@@ -2,6 +2,8 @@
 
 import plyfile
 import numpy
+import scipy.optimize
+import itertools
 
 
 class PLYObject:
@@ -107,3 +109,44 @@ class PLYObject:
 							[0, 0, 0, 1]])
 
 		self.apply(mat)
+
+	def fitSphere(self, absoluteDelta=False):
+		vertices = self.getVertices() # type: numpy.ndarray
+		centerEstimate = vertices.T.mean(axis=0)
+		radiusEstimate = numpy.linalg.norm(centerEstimate - vertices.T[0])
+		sphereParams = numpy.concatenate((centerEstimate, [radiusEstimate]))
+
+		def errorFuncSphere(sphereParams, verticesT):
+			return numpy.linalg.norm(verticesT - sphereParams[:3], axis=1) - sphereParams[3]
+
+		result, status = scipy.optimize.leastsq(errorFuncSphere, sphereParams, args=(vertices.T,))
+
+		if status not in [1, 2, 3, 4]:
+			raise RuntimeError('Can\'t fit sphere to given data')
+
+		delta = errorFuncSphere(result, vertices.T)
+
+		if absoluteDelta:
+			delta = numpy.abs(delta)
+
+		return tuple(itertools.chain(result, (delta.mean(),)))
+
+	@staticmethod
+	def from_sphere(center, radius, h=30, v=72):
+		vertices = []
+
+		for m in range(0, h):
+			for n in range(0, v):
+				x = numpy.sin(numpy.pi * m / h) * numpy.cos(2 * numpy.pi * n / v)
+				y = numpy.sin(numpy.pi * m / h) * numpy.sin(2 * numpy.pi * n / v)
+				z = numpy.cos(numpy.pi * m / h)
+
+				vertices.append(tuple((numpy.array([x, y, z]) * radius) + center))
+
+		plyVertices = numpy.array(vertices, dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4')])
+		plyVertices = plyfile.PlyElement.describe(plyVertices, 'vertex')
+
+		plyObject = PLYObject()
+		plyObject.plydata = plyfile.PlyData([plyVertices])
+
+		return plyObject
