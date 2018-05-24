@@ -229,7 +229,7 @@ class PLYObject:
 
 		for face in polyhedronFaces:
 			target = numpy.array([polyhedronVertices[i] for i in face])
-			transform, _, _, _ = numpy.linalg.lstsq(masterTriCorners, target, None)
+			transform, _, _, _ = numpy.linalg.lstsq(masterTriCorners, target, -1.0)
 
 			tri = masterTri.dot(transform)[:, :3]
 			tri = tri / numpy.linalg.norm(tri, axis=1)[:, numpy.newaxis]
