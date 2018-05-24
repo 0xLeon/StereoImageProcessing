@@ -150,3 +150,51 @@ class PLYObject:
 		plyObject.plydata = plyfile.PlyData([plyVertices])
 
 		return plyObject
+
+	def fitPlane(self, absoluteDelta=False):
+		vertices = self.getVertices() # type: numpy.ndarray
+		samplePoints = vertices.T[numpy.random.choice(vertices.T.shape[0], 3, replace=False), :]
+		normal = numpy.cross(samplePoints[2] - samplePoints[0], samplePoints[1] - samplePoints[0])
+		d = (normal * samplePoints[0]).sum()
+		unitNormal = normal / numpy.linalg.norm(normal)
+		planeParams = numpy.concatenate((normal, [d]))
+
+		def errorFuncPlane(planeParams, verticesT):
+			return (verticesT.dot(planeParams[:3]) + planeParams[3]) / numpy.linalg.norm(planeParams[:3])
+
+		result, status = scipy.optimize.leastsq(errorFuncPlane, planeParams, args=(vertices.T,))
+
+		if status not in [1, 2, 3, 4]:
+			raise RuntimeError('Can\'t fit sphere to given data')
+
+		result = result / -result[3]
+		delta = errorFuncPlane(result, vertices.T)
+
+		if absoluteDelta:
+			delta = numpy.abs(delta)
+
+		return tuple(itertools.chain(result[:3], (delta.mean(),)))
+
+	@staticmethod
+	def from_plane(planeParams, xrange=100, zrange=100):
+		if isinstance(xrange, int):
+			xrange = range(xrange)
+
+		if isinstance(zrange, int):
+			zrange = range(zrange)
+
+		vertices = []
+
+		for x in xrange:
+			for z in zrange:
+				y = (-planeParams[0] * x - planeParams[2] * z - planeParams[3]) / planeParams[1]
+
+				vertices.append((float(x), float(y), float(z)))
+
+		plyVertices = numpy.array(vertices, dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4')])
+		plyVertices = plyfile.PlyElement.describe(plyVertices, 'vertex')
+
+		plyObject = PLYObject()
+		plyObject.plydata = plyfile.PlyData([plyVertices])
+
+		return plyObject
