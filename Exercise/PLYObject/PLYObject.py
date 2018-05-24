@@ -175,7 +175,7 @@ class PLYObject:
 		])
 
 	@staticmethod
-	def from_geosphere(sphereParams, frequency=5):
+	def generate_geosphere(sphereParams, frequency=5):
 		sin_phi = 2.0 / numpy.sqrt(5.0)
 		cos_phi = 1.0 / numpy.sqrt(5.0)
 
@@ -243,7 +243,7 @@ class PLYObject:
 		return PLYObject.from_vertices(vertices)
 
 	@staticmethod
-	def from_sphere(sphereParams, h=30, v=72):
+	def generate_sphere(sphereParams, h=30, v=72):
 		vertices = []
 
 		pi_h = numpy.pi / h
@@ -286,7 +286,7 @@ class PLYObject:
 		return tuple(itertools.chain(result[:3], (numpy.abs(delta).mean(),)))
 
 	@staticmethod
-	def from_plane(planeParams, xrange=100, zrange=100):
+	def generate_plane(planeParams, xrange=100, zrange=100):
 		if isinstance(xrange, int):
 			xrange = range(xrange)
 
