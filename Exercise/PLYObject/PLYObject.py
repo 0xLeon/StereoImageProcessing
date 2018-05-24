@@ -142,35 +142,25 @@ class PLYObject:
 
 		return tuple(itertools.chain(result, (numpy.abs(delta).mean(),)))
 
-	@staticmethod
-	def _classOneSample(f):
-		freq = float(f)
+	def fitPlane(self):
+		vertices = self.getVertices() # type: numpy.ndarray
+		samplePoints = vertices.T[numpy.random.choice(vertices.T.shape[0], 3, replace=False), :]
+		normal = numpy.cross(samplePoints[2] - samplePoints[0], samplePoints[1] - samplePoints[0])
+		d = (normal * samplePoints[0]).sum()
+		planeParams = numpy.concatenate((normal, [d]))
 
-		sin_pi_third = numpy.sin(numpy.pi / 3.0)
-		cos_pi_third = numpy.cos(numpy.pi / 3.0)
-		sin_pi_third_third = sin_pi_third / 3.0
+		def errorFuncPlane(planeParams, verticesT):
+			return (verticesT.dot(planeParams[:3]) + planeParams[3]) / numpy.linalg.norm(planeParams[:3])
 
-		vertices = []
+		result, status = scipy.optimize.leastsq(errorFuncPlane, planeParams, args=(vertices.T,))
 
-		for r in range(f + 1):
-			r_cos_pi_third = r * cos_pi_third
+		if status not in [1, 2, 3, 4]:
+			raise RuntimeError('Can\'t fit sphere to given data')
 
-			y = (r * sin_pi_third / freq) - sin_pi_third_third
+		result = result / -result[3]
+		delta = errorFuncPlane(result, vertices.T)
 
-			for c in range(f - r + 1):
-				x = ((r_cos_pi_third + c) / freq) - 0.5
-
-				vertices.append([x, y, 0.0, 1.0])
-
-		return numpy.array(vertices)
-
-	@staticmethod
-	def _getTriCorners(tri):
-		return numpy.array([
-			[0.0, tri.T[1].max(), 0.0, 1.0],
-			[tri.T[0].max(), tri.T[1].min(), 0.0, 1.0],
-			[tri.T[0].min(), tri.T[1].min(), 0.0, 1.0],
-		])
+		return tuple(itertools.chain(result[:3], (numpy.abs(delta).mean(),)))
 
 	@classmethod
 	def generate_geosphere(cls, sphereParams, frequency=5):
@@ -263,26 +253,6 @@ class PLYObject:
 
 		return cls.from_vertices(vertices)
 
-	def fitPlane(self):
-		vertices = self.getVertices() # type: numpy.ndarray
-		samplePoints = vertices.T[numpy.random.choice(vertices.T.shape[0], 3, replace=False), :]
-		normal = numpy.cross(samplePoints[2] - samplePoints[0], samplePoints[1] - samplePoints[0])
-		d = (normal * samplePoints[0]).sum()
-		planeParams = numpy.concatenate((normal, [d]))
-
-		def errorFuncPlane(planeParams, verticesT):
-			return (verticesT.dot(planeParams[:3]) + planeParams[3]) / numpy.linalg.norm(planeParams[:3])
-
-		result, status = scipy.optimize.leastsq(errorFuncPlane, planeParams, args=(vertices.T,))
-
-		if status not in [1, 2, 3, 4]:
-			raise RuntimeError('Can\'t fit sphere to given data')
-
-		result = result / -result[3]
-		delta = errorFuncPlane(result, vertices.T)
-
-		return tuple(itertools.chain(result[:3], (numpy.abs(delta).mean(),)))
-
 	@classmethod
 	def generate_plane(cls, planeParams, xrange=100, zrange=100):
 		if isinstance(xrange, int):
@@ -300,3 +270,33 @@ class PLYObject:
 				vertices.append((float(x), y, float(z)))
 
 		return cls.from_vertices(vertices)
+
+	@staticmethod
+	def _classOneSample(f):
+		freq = float(f)
+
+		sin_pi_third = numpy.sin(numpy.pi / 3.0)
+		cos_pi_third = numpy.cos(numpy.pi / 3.0)
+		sin_pi_third_third = sin_pi_third / 3.0
+
+		vertices = []
+
+		for r in range(f + 1):
+			r_cos_pi_third = r * cos_pi_third
+
+			y = (r * sin_pi_third / freq) - sin_pi_third_third
+
+			for c in range(f - r + 1):
+				x = ((r_cos_pi_third + c) / freq) - 0.5
+
+				vertices.append([x, y, 0.0, 1.0])
+
+		return numpy.array(vertices)
+
+	@staticmethod
+	def _getTriCorners(tri):
+		return numpy.array([
+			[0.0, tri.T[1].max(), 0.0, 1.0],
+			[tri.T[0].max(), tri.T[1].min(), 0.0, 1.0],
+			[tri.T[0].min(), tri.T[1].min(), 0.0, 1.0],
+		])
