@@ -166,7 +166,6 @@ class PLYObject:
 		samplePoints = vertices.T[numpy.random.choice(vertices.T.shape[0], 3, replace=False), :]
 		normal = numpy.cross(samplePoints[2] - samplePoints[0], samplePoints[1] - samplePoints[0])
 		d = (normal * samplePoints[0]).sum()
-		unitNormal = normal / numpy.linalg.norm(normal)
 		planeParams = numpy.concatenate((normal, [d]))
 
 		def errorFuncPlane(planeParams, verticesT):
