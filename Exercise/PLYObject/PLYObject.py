@@ -174,8 +174,8 @@ class PLYObject:
 			[tri.T[0].min(), tri.T[1].min(), 0.0, 1.0],
 		])
 
-	@staticmethod
-	def generate_geosphere(sphereParams, frequency=5):
+	@classmethod
+	def generate_geosphere(cls, sphereParams, frequency=5):
 		sin_phi = 2.0 / numpy.sqrt(5.0)
 		cos_phi = 1.0 / numpy.sqrt(5.0)
 
@@ -226,8 +226,8 @@ class PLYObject:
 
 		vertices = []
 
-		masterTri = PLYObject._classOneSample(frequency)
-		masterTriCorners = PLYObject._getTriCorners(masterTri)
+		masterTri = cls._classOneSample(frequency)
+		masterTriCorners = cls._getTriCorners(masterTri)
 
 		for face in polyhedronFaces:
 			target = numpy.array([polyhedronVertices[i] for i in face])
@@ -240,10 +240,10 @@ class PLYObject:
 			for vert in tri:
 				vertices.append(tuple(vert))
 
-		return PLYObject.from_vertices(vertices)
+		return cls.from_vertices(vertices)
 
-	@staticmethod
-	def generate_sphere(sphereParams, h=30, v=72):
+	@classmethod
+	def generate_sphere(cls, sphereParams, h=30, v=72):
 		vertices = []
 
 		pi_h = numpy.pi / h
@@ -263,7 +263,7 @@ class PLYObject:
 
 				vertices.append(tuple((numpy.array([x, y, z]) * sphereParams[3]) + sphereParams[:3]))
 
-		return PLYObject.from_vertices(vertices)
+		return cls.from_vertices(vertices)
 
 	def fitPlane(self):
 		vertices = self.getVertices() # type: numpy.ndarray
@@ -285,8 +285,8 @@ class PLYObject:
 
 		return tuple(itertools.chain(result[:3], (numpy.abs(delta).mean(),)))
 
-	@staticmethod
-	def generate_plane(planeParams, xrange=100, zrange=100):
+	@classmethod
+	def generate_plane(cls, planeParams, xrange=100, zrange=100):
 		if isinstance(xrange, int):
 			xrange = range(xrange)
 
@@ -301,4 +301,4 @@ class PLYObject:
 
 				vertices.append((float(x), y, float(z)))
 
-		return PLYObject.from_vertices(vertices)
+		return cls.from_vertices(vertices)
