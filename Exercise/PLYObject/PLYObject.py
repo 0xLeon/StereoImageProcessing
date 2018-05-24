@@ -10,6 +10,8 @@ import scipy.optimize
 class PLYObject:
 
 	def __init__(self, name=None):
+		self.plydata = plyfile.PlyData()
+
 		if not name is None:
 			self.read(name)
 
