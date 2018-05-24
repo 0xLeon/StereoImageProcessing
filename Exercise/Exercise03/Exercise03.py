@@ -1,9 +1,5 @@
 from PLYObject import PLYObject
 
-from scipy.optimize import leastsq
-import numpy as np
-import matplotlib.pyplot as plt
-
 if __name__=="__main__":
 	p = PLYObject('sphere.ply')
 	print(p.getVertices().shape)

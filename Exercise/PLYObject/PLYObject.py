@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
+import itertools
+
 import plyfile
 import numpy
 import scipy.optimize
-import itertools
 
 
 class PLYObject:
