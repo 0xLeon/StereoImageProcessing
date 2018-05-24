@@ -110,6 +110,19 @@ class PLYObject:
 
 		self.apply(mat)
 
+	@staticmethod
+	def from_vertices(vertices, dtype=None):
+		if dtype is None:
+			dtype = [('x', 'f4'), ('y', 'f4'), ('z', 'f4')]
+
+		plyVertices = numpy.array(vertices, dtype=dtype)
+		plyVertices = plyfile.PlyElement.describe(plyVertices, 'vertex')
+
+		plyObject = PLYObject()
+		plyObject.plydata = plyfile.PlyData([plyVertices])
+
+		return plyObject
+
 	def fitSphere(self, absoluteDelta=False):
 		vertices = self.getVertices() # type: numpy.ndarray
 		centerEstimate = vertices.T.mean(axis=0)
@@ -143,13 +156,7 @@ class PLYObject:
 
 				vertices.append(tuple((numpy.array([x, y, z]) * sphereParams[3]) + sphereParams[:3]))
 
-		plyVertices = numpy.array(vertices, dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4')])
-		plyVertices = plyfile.PlyElement.describe(plyVertices, 'vertex')
-
-		plyObject = PLYObject()
-		plyObject.plydata = plyfile.PlyData([plyVertices])
-
-		return plyObject
+		return PLYObject.from_vertices(vertices)
 
 	def fitPlane(self, absoluteDelta=False):
 		vertices = self.getVertices() # type: numpy.ndarray
@@ -191,10 +198,4 @@ class PLYObject:
 
 				vertices.append((float(x), float(y), float(z)))
 
-		plyVertices = numpy.array(vertices, dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4')])
-		plyVertices = plyfile.PlyElement.describe(plyVertices, 'vertex')
-
-		plyObject = PLYObject()
-		plyObject.plydata = plyfile.PlyData([plyVertices])
-
-		return plyObject
+		return PLYObject.from_vertices(vertices)
