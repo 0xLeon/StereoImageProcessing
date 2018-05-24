@@ -126,7 +126,7 @@ class PLYObject:
 
 		return plyObject
 
-	def fitSphere(self, absoluteDelta=False):
+	def fitSphere(self):
 		vertices = self.getVertices() # type: numpy.ndarray
 		centerEstimate = vertices.T.mean(axis=0)
 		radiusEstimate = numpy.linalg.norm(centerEstimate - vertices.T[0])
@@ -142,10 +142,7 @@ class PLYObject:
 
 		delta = errorFuncSphere(result, vertices.T)
 
-		if absoluteDelta:
-			delta = numpy.abs(delta)
-
-		return tuple(itertools.chain(result, (delta.mean(),)))
+		return tuple(itertools.chain(result, (numpy.abs(delta).mean(),)))
 
 	@staticmethod
 	def from_sphere(sphereParams, h=30, v=72):
@@ -161,7 +158,7 @@ class PLYObject:
 
 		return PLYObject.from_vertices(vertices)
 
-	def fitPlane(self, absoluteDelta=False):
+	def fitPlane(self):
 		vertices = self.getVertices() # type: numpy.ndarray
 		samplePoints = vertices.T[numpy.random.choice(vertices.T.shape[0], 3, replace=False), :]
 		normal = numpy.cross(samplePoints[2] - samplePoints[0], samplePoints[1] - samplePoints[0])
@@ -179,10 +176,7 @@ class PLYObject:
 		result = result / -result[3]
 		delta = errorFuncPlane(result, vertices.T)
 
-		if absoluteDelta:
-			delta = numpy.abs(delta)
-
-		return tuple(itertools.chain(result[:3], (delta.mean(),)))
+		return tuple(itertools.chain(result[:3], (numpy.abs(delta).mean(),)))
 
 	@staticmethod
 	def from_plane(planeParams, xrange=100, zrange=100):
