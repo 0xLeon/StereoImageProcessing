@@ -148,11 +148,20 @@ class PLYObject:
 	def from_sphere(sphereParams, h=30, v=72):
 		vertices = []
 
+		pi_h = numpy.pi / h
+		two_pi_v = 2 * numpy.pi / v
+
 		for m in range(0, h):
+			pi_h_m = pi_h * m
+			sin_pi_h_m = numpy.sin(pi_h_m)
+			cos_pi_h_m = numpy.cos(pi_h_m)
+
 			for n in range(0, v):
-				x = numpy.sin(numpy.pi * m / h) * numpy.cos(2 * numpy.pi * n / v)
-				y = numpy.sin(numpy.pi * m / h) * numpy.sin(2 * numpy.pi * n / v)
-				z = numpy.cos(numpy.pi * m / h)
+				two_pi_v_n = two_pi_v * n
+
+				x = sin_pi_h_m * numpy.cos(two_pi_v_n)
+				y = sin_pi_h_m * numpy.sin(two_pi_v_n)
+				z = cos_pi_h_m
 
 				vertices.append(tuple((numpy.array([x, y, z]) * sphereParams[3]) + sphereParams[:3]))
 
