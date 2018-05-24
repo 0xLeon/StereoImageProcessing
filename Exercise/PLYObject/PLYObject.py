@@ -6,9 +6,7 @@ import plyfile
 import numpy
 import scipy.optimize
 
-
 class PLYObject:
-
 	def __init__(self, name=None):
 		self.plydata = plyfile.PlyData()
 
