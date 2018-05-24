@@ -132,7 +132,7 @@ class PLYObject:
 		return tuple(itertools.chain(result, (delta.mean(),)))
 
 	@staticmethod
-	def from_sphere(center, radius, h=30, v=72):
+	def from_sphere(sphereParams, h=30, v=72):
 		vertices = []
 
 		for m in range(0, h):
@@ -141,7 +141,7 @@ class PLYObject:
 				y = numpy.sin(numpy.pi * m / h) * numpy.sin(2 * numpy.pi * n / v)
 				z = numpy.cos(numpy.pi * m / h)
 
-				vertices.append(tuple((numpy.array([x, y, z]) * radius) + center))
+				vertices.append(tuple((numpy.array([x, y, z]) * sphereParams[3]) + sphereParams[:3]))
 
 		plyVertices = numpy.array(vertices, dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4')])
 		plyVertices = plyfile.PlyElement.describe(plyVertices, 'vertex')

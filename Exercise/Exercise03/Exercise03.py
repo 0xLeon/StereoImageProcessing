@@ -11,6 +11,6 @@ if __name__=="__main__":
 	sphereInfo = p.fitSphere()
 	print(sphereInfo)
 
-	sphere = PLYObject.from_sphere(sphereInfo[:3], sphereInfo[3])
+	sphere = PLYObject.from_sphere(sphereInfo)
 	print(sphere.getVertices().shape)
 	sphere.write('sphere_generated.ply')
