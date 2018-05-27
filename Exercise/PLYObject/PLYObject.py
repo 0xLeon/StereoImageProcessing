@@ -111,15 +111,15 @@ class PLYObject:
 
 		self.apply(mat)
 
-	@staticmethod
-	def from_vertices(vertices, dtype=None):
+	@classmethod
+	def from_vertices(cls, vertices, dtype=None):
 		if dtype is None:
 			dtype = [('x', 'f4'), ('y', 'f4'), ('z', 'f4')]
 
 		plyVertices = np.array(vertices, dtype=dtype)
 		plyVertices = plyfile.PlyElement.describe(plyVertices, 'vertex')
 
-		plyObject = PLYObject()
+		plyObject = cls()
 		plyObject.plydata = plyfile.PlyData([plyVertices])
 
 		return plyObject
