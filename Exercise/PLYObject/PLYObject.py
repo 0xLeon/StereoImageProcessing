@@ -254,12 +254,12 @@ class PLYObject:
 		return cls.from_vertices(vertices)
 
 	@classmethod
-	def generate_plane(cls, planeParams, xrange=100, zrange=100):
+	def generate_plane(cls, planeParams, xrange=50, zrange=50):
 		if isinstance(xrange, int):
-			xrange = range(xrange)
+			xrange = range(-xrange, xrange + 1)
 
 		if isinstance(zrange, int):
-			zrange = range(zrange)
+			zrange = range(-zrange, zrange + 1)
 
 		vertices = []
 
