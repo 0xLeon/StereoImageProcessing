@@ -4,6 +4,7 @@ import argparse
 import itertools
 
 import cv2 as cv
+import matplotlib.pyplot as plt
 import numpy as np
 import plyfile
 
@@ -20,6 +21,19 @@ def generateDisparityMap():
 
 def generatePointcloud():
 	pass
+
+def drawMatchedImages(imgA, kpA, imgB, kpB, matches, matchesMask):
+	drawParams = dict(
+		matchColor=(0, 255, 0),
+		singlePointColor=(255, 0, 0),
+		matchesMask=matchesMask,
+		flags=0,
+	)
+
+	img = cv.drawMatchesKnn(imgA, kpA, imgB, kpB, matches, None, **drawParams)
+
+	plt.imshow(img)
+	plt.show()
 
 def main():
 	pass
