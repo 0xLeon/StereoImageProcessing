@@ -7,6 +7,14 @@ import cv2 as cv
 import numpy as np
 import plyfile
 
+def readCameraData(cameraName):
+	return {
+		'projection': np.genfromtxt('{:s}_K.txt'.format(cameraName)),
+		'rotation': np.genfromtxt('{:s}_R.txt'.format(cameraName)),
+		'translation': np.genfromtxt('{:s}_T.txt'.format(cameraName)),
+		'distortion': np.genfromtxt('{:s}_D.txt'.format(cameraName)),
+	}
+
 def main():
 	pass
 
