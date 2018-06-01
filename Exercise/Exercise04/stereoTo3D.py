@@ -15,6 +15,12 @@ def readCameraData(cameraName):
 		'distortion': np.genfromtxt('{:s}_D.txt'.format(cameraName)),
 	}
 
+def generateDisparityMap():
+	pass
+
+def generatePointcloud():
+	pass
+
 def main():
 	pass
 
