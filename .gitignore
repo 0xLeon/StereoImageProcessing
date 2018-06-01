@@ -107,3 +107,10 @@ ENV/
 *_*.ply
 *output.ply
 **/output/*
+*.pointcloud.ply
+*.pkl
+*.npz
+*.dll
+rs-*.py
+*__Color.txt
+*__Depth.txt
