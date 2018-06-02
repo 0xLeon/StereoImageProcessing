@@ -173,7 +173,10 @@ def main(camA='camA', camB='camB', readMatch='', output='./output/'):
 	imgA = cv.imread('camA_image.jpg')
 	imgB = cv.imread('camb_image.jpg')
 
-	kpA, desA, kpB, desB, matches, matchesMask = matchImages(imgA, imgB)
+	if readMatch:
+		kpA, desA, kpB, desB, matches, matchesMask = loadStereoMatchingResult(readMatch)
+	else:
+		kpA, desA, kpB, desB, matches, matchesMask = matchImages(imgA, imgB)
 
 	drawMatchedImages(imgA, kpA, imgB, kpB, matches, matchesMask)
 
