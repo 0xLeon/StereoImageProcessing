@@ -3,6 +3,7 @@
 import argparse
 import itertools
 import pickle
+import sys
 
 import cv2 as cv
 import matplotlib.pyplot as plt
@@ -165,9 +166,9 @@ def drawMatchedImages(imgA, kpA, imgB, kpB, matches, matchesMask):
 	plt.imshow(img)
 	plt.show()
 
-def main():
-	camA = readCameraData('camA')
-	camB = readCameraData('camB')
+def main(camA='camA', camB='camB', readMatch='', output='./output/'):
+	camA = readCameraData(camA)
+	camB = readCameraData(camB)
 
 	imgA = cv.imread('camA_image.jpg')
 	imgB = cv.imread('camb_image.jpg')
@@ -178,5 +179,18 @@ def main():
 
 	return
 
+def main_cli(args=None):
+	if args is None:
+		args = sys.argv[1:]
+
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--camA', default='camA')
+	parser.add_argument('--camB', default='camB')
+	parser.add_argument('--readmatch', default='')
+	parser.add_argument('--output', default='./output/')
+	args = parser.parse_args(args)
+
+	main(args.camA, args.camB, args.readmatch, args.output)
+
 if __name__ == '__main__':
-	main()
+	main_cli()
