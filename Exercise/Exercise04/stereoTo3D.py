@@ -168,6 +168,9 @@ def drawMatchedImages(imgA, kpA, imgB, kpB, matches, matchesMask):
 	plt.show()
 
 def main(camA='camA', camB='camB', readMatch='', output='./output/'):
+	if output and not os.path.isdir(output):
+		os.makedirs(output)
+
 	camA = readCameraData(camA)
 	camB = readCameraData(camB)
 
