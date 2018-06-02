@@ -171,8 +171,8 @@ def main(camNameA='camA', camNameB='camB', readMatch='', output='./output/'):
 	if output and not os.path.isdir(output):
 		os.makedirs(output)
 
-	camA = readCameraData(camA)
-	camB = readCameraData(camB)
+	camA = readCameraData(camNameA)
+	camB = readCameraData(camNameB)
 
 	imgA = cv.imread('{:s}_image.jpg'.format(camNameA))
 	imgB = cv.imread('{:s}_image.jpg'.format(camNameB))
