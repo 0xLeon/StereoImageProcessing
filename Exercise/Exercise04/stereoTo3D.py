@@ -174,8 +174,8 @@ def main(camA='camA', camB='camB', readMatch='', output='./output/'):
 	camA = readCameraData(camA)
 	camB = readCameraData(camB)
 
-	imgA = cv.imread('camA_image.jpg')
-	imgB = cv.imread('camb_image.jpg')
+	imgA = cv.imread('{:s}_image.jpg'.format(camA))
+	imgB = cv.imread('{:s}_image.jpg'.format(camB))
 
 	if readMatch:
 		kpA, desA, kpB, desB, matches, matchesMask = loadStereoMatchingResult(readMatch)
