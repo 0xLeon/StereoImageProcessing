@@ -79,6 +79,17 @@ def saveMatches(matches, matchesMask, file):
 	else:
 		pickle.dump(dict(matches=matches, matchesMask=matchesMask), file)
 
+def loadMatches(file):
+	if isinstance(file, str):
+		with open(file, 'rb') as f:
+			data = pickle.load(f)
+	else:
+		data = pickle.load(file)
+
+	matches = [(dictToMatch(match[0]), dictToMatch(match[1])) for match in data['matches']]
+
+	return matches, data['matchesMask']
+
 def matchImages(imgA, imgB, nFeatures=50000, qualityThreshold=0.8):
 	orb = cv.ORB_create(nFeatures)
 	flann = cv.FlannBasedMatcher(
