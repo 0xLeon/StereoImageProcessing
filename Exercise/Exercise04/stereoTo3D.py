@@ -167,15 +167,15 @@ def drawMatchedImages(imgA, kpA, imgB, kpB, matches, matchesMask):
 	plt.imshow(img)
 	plt.show()
 
-def main(camA='camA', camB='camB', readMatch='', output='./output/'):
+def main(camNameA='camA', camNameB='camB', readMatch='', output='./output/'):
 	if output and not os.path.isdir(output):
 		os.makedirs(output)
 
 	camA = readCameraData(camA)
 	camB = readCameraData(camB)
 
-	imgA = cv.imread('{:s}_image.jpg'.format(camA))
-	imgB = cv.imread('{:s}_image.jpg'.format(camB))
+	imgA = cv.imread('{:s}_image.jpg'.format(camNameA))
+	imgB = cv.imread('{:s}_image.jpg'.format(camNameB))
 
 	if readMatch:
 		kpA, desA, kpB, desB, matches, matchesMask = loadStereoMatchingResult(readMatch)
