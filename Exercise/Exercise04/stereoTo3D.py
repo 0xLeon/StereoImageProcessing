@@ -64,7 +64,11 @@ def saveFeatures(keypoints, descriptors, file):
 		pickle.dump(dict(keypoints=keypoints, descriptors=descriptors), file)
 
 def loadFeatures(file):
-	data = pickle.load(file)
+	if isinstance(file, str):
+		with open(file, 'rb') as f:
+			data = pickle.load(f)
+	else:
+		data = pickle.load(file)
 
 	keypoints = [*map(dictToKeypoint, data['keypoints'])]
 
