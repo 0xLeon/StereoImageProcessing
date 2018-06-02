@@ -57,7 +57,7 @@ def dictToMatch(match):
 	)
 
 def saveFeatures(keypoints, descriptors, file):
-	keypoints = [*map(keypointToDict, keypoints)]
+	keypoints = list(map(keypointToDict, keypoints))
 
 	if isinstance(file, str):
 		with open(file, 'wb') as f:
@@ -72,7 +72,7 @@ def loadFeatures(file):
 	else:
 		data = pickle.load(file)
 
-	keypoints = [*map(dictToKeypoint, data['keypoints'])]
+	keypoints = list(map(dictToKeypoint, data['keypoints']))
 
 	return keypoints, data['descriptors']
 
@@ -97,8 +97,8 @@ def loadMatches(file):
 	return matches, data['matchesMask']
 
 def saveStereoMatchingResult(kpA, desA, kpB, desB, matches, matchesMask, file='stereoMatch.pkl'):
-	kpA = [*map(keypointToDict, kpA)]
-	kpB = [*map(keypointToDict, kpB)]
+	kpA = list(map(keypointToDict, kpA))
+	kpB = list(map(keypointToDict, kpB))
 	matches = [(matchToDict(match[0]), matchToDict(match[1])) for match in matches]
 
 	data = dict(
@@ -123,8 +123,8 @@ def loadStereoMatchingResult(file='stereoMatch.pkl'):
 	else:
 		data = pickle.load(file)
 
-	kpA = [*map(dictToKeypoint, data['kpA'])]
-	kpB = [*map(dictToKeypoint, data['kpB'])]
+	kpA = list(map(dictToKeypoint, data['kpA']))
+	kpB = list(map(dictToKeypoint, data['kpB']))
 	matches = [(dictToMatch(match[0]), dictToMatch(match[1])) for match in data['matches']]
 
 	return kpA, data['desA'], kpB, data['desB'], matches, data['matchesMask']
