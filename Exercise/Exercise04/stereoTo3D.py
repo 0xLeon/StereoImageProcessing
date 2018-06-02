@@ -94,6 +94,39 @@ def loadMatches(file):
 
 	return matches, data['matchesMask']
 
+def saveStereoMatchingResult(kpA, desA, kpB, desB, matches, matchesMask, file='stereoMatch.pkl'):
+	kpA = [*map(keypointToDict, kpA)]
+	kpB = [*map(keypointToDict, kpB)]
+	matches = [(matchToDict(match[0]), matchToDict(match[1])) for match in matches]
+
+	data = dict(
+		kpA=kpA,
+		desA=desA,
+		kpB=kpB,
+		desB=desB,
+		matches=matches,
+		matchesMask=matchesMask,
+	)
+
+	if isinstance(file, str):
+		with open(file, 'wb') as f:
+			pickle.dump(data, f)
+	else:
+		pickle.dump(data, file)
+
+def loadStereoMatchingResult(file='stereoMatch.pkl'):
+	if isinstance(file, str):
+		with open(file, 'rb') as f:
+			data = pickle.load(f)
+	else:
+		data = pickle.load(file)
+
+	kpA = [*map(dictToKeypoint, data['kpA'])]
+	kpB = [*map(dictToKeypoint, data['kpB'])]
+	matches = [(dictToMatch(match[0]), dictToMatch(match[1])) for match in data['matches']]
+
+	return kpA, data['desA'], kpB, data['desB'], matches, data['matchesMask']
+
 def matchImages(imgA, imgB, nFeatures=50000, qualityThreshold=0.8):
 	orb = cv.ORB_create(nFeatures)
 	flann = cv.FlannBasedMatcher(
