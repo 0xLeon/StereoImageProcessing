@@ -2,6 +2,7 @@
 
 import argparse
 import itertools
+import pickle
 
 import cv2 as cv
 import matplotlib.pyplot as plt
@@ -15,6 +16,68 @@ def readCameraData(cameraName):
 		'translation': np.genfromtxt('{:s}_T.txt'.format(cameraName)),
 		'distortion': np.genfromtxt('{:s}_D.txt'.format(cameraName)),
 	}
+
+def keypointToDict(keypoint):
+	return {
+		'angle': keypoint.angle,
+		'class_id': keypoint.class_id,
+		'octave': keypoint.octave,
+		'pt': keypoint.pt,
+		'response': keypoint.response,
+		'size': keypoint.size,
+	}
+
+def dictToKeypoint(keypoint):
+	return cv.KeyPoint(
+		keypoint['pt'][0],
+		keypoint['pt'][1],
+		keypoint['size'],
+		keypoint['angle'],
+		keypoint['response'],
+		keypoint['octave'],
+		keypoint['class_id'],
+	)
+
+def matchToDict(match):
+	return {
+		'queryIdx': match.queryIdx,
+		'trainIdx': match.trainIdx,
+		'imgIdx': match.imgIdx,
+		'distance': match.distance,
+	}
+
+def dictToMatch(match):
+	return cv.DMatch(
+		match['queryIdx'],
+		match['trainIdx'],
+		match['imgIdx'],
+		match['distance'],
+	)
+
+def saveFeatures(keypoints, descriptors, file):
+	keypoints = [*map(keypointToDict, keypoints)]
+
+	if isinstance(file, str):
+		with open(file, 'wb') as f:
+			pickle.dump(dict(keypoints=keypoints, descriptors=descriptors), f)
+	else:
+		pickle.dump(dict(keypoints=keypoints, descriptors=descriptors), file)
+
+def loadFeatures(file):
+	data = pickle.load(file)
+
+	keypoints = [*map(dictToKeypoint, data['keypoints'])]
+
+	return keypoints, data['descriptors']
+
+def saveMatches(matches, matchesMask, file):
+	matches = [(matchToDict(match[0]), matchToDict(match[1])) for match in matches]
+
+	if isinstance(file, str):
+		with open(file, 'wb') as f:
+			pickle.dump(dict(matches=matches, matchesMask=matchesMask), f)
+	else:
+		pickle.dump(dict(matches=matches, matchesMask=matchesMask), file)
 
 def generateDisparityMap():
 	pass
