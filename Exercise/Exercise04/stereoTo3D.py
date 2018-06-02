@@ -117,15 +117,10 @@ def main():
 	matches = flann.knnMatch(desA, desB, k=2)
 	matchesMask = [[0, 0] for i in range(len(matches))]
 
-	c = 0
-
 	for i, (m, n) in enumerate(matches):
 		if m.distance < 0.8 * n.distance:
 			matchesMask[i] = [1, 0]
 
-			c += 1
-
-	print(c)
 
 	drawMatchedImages(imgA, kpA, imgB, kpB, matches, matchesMask)
 
