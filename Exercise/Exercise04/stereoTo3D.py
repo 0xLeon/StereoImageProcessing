@@ -2,6 +2,7 @@
 
 import argparse
 import itertools
+import os
 import pickle
 import sys
 
@@ -178,6 +179,7 @@ def main(camA='camA', camB='camB', readMatch='', output='./output/'):
 	else:
 		kpA, desA, kpB, desB, matches, matchesMask = matchImages(imgA, imgB)
 
+	saveStereoMatchingResult(kpA, desA, kpB, desB, matches, matchesMask, os.path.join(output, 'stereoMatch.pkl'))
 	drawMatchedImages(imgA, kpA, imgB, kpB, matches, matchesMask)
 
 	return
