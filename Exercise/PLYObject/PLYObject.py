@@ -127,7 +127,7 @@ class PLYObject:
 	def fitSphere(self):
 		vertices = self.getVertices() # type: np.ndarray
 		centerEstimate = vertices.mean(axis=1)
-		radiusEstimate = np.linalg.norm(centerEstimate - vertices.T[0])
+		radiusEstimate = np.linalg.norm(vertices.T - centerEstimate, axis=1).mean()
 		sphereParams = np.concatenate((centerEstimate, [radiusEstimate]))
 
 		def errorFuncSphere(sphereParams, verticesT):
