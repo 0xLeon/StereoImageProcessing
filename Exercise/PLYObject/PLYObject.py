@@ -144,7 +144,7 @@ class PLYObject:
 
 	def fitPlane(self):
 		vertices = self.getVertices() # type: np.ndarray
-		samplePoints = vertices.T[np.random.choice(vertices.T.shape[0], 3, replace=False), :]
+		samplePoints = vertices[:, np.random.choice(vertices.shape[1], 3, replace=False)].T
 		normal = np.cross(samplePoints[2] - samplePoints[0], samplePoints[1] - samplePoints[0])
 		d = (normal * samplePoints[0]).sum()
 		planeParams = np.concatenate((normal, [d]))
