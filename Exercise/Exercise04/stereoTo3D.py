@@ -11,13 +11,21 @@ import matplotlib.pyplot as plt
 import numpy as np
 import plyfile
 
-def readCameraData(cameraName):
-	return {
-		'projection': np.genfromtxt('{:s}_K.txt'.format(cameraName)),
-		'rotation': np.genfromtxt('{:s}_R.txt'.format(cameraName)),
-		'translation': np.genfromtxt('{:s}_T.txt'.format(cameraName)),
-		'distortion': np.genfromtxt('{:s}_D.txt'.format(cameraName)),
-	}
+class CameraData(object):
+	def __init__(self, projection, rotation, translation, distortion):
+		self.projection = projection # type: np.ndarray
+		self.rotation = rotation # type: np.ndarray
+		self.translation = translation # type: np.ndarray
+		self.distortion = distortion # type: np.ndarray
+
+	@classmethod
+	def fromFile(cls, cameraName):
+		return cls(
+			np.genfromtxt('{:s}_K.txt'.format(cameraName)),
+			np.genfromtxt('{:s}_R.txt'.format(cameraName)),
+			np.genfromtxt('{:s}_T.txt'.format(cameraName)),
+			np.genfromtxt('{:s}_D.txt'.format(cameraName)),
+		)
 
 def keypointToDict(keypoint):
 	return {
@@ -171,8 +179,8 @@ def main(camNameA='camA', camNameB='camB', readMatch='', output='./output/'):
 	if output and not os.path.isdir(output):
 		os.makedirs(output)
 
-	camA = readCameraData(camNameA)
-	camB = readCameraData(camNameB)
+	camA = CameraData.fromFile(camNameA) # type: CameraData
+	camB = CameraData.fromFile(camNameB) # type: CameraData
 
 	imgA = cv.imread('{:s}_image.jpg'.format(camNameA))
 	imgB = cv.imread('{:s}_image.jpg'.format(camNameB))
