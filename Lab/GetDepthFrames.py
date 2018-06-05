@@ -44,7 +44,7 @@ def getDepthFrames(nImages=10, resolution=(1280,720), fps=30, sleepTime=5, laser
 		os.makedirs(outputFolder)
 
 	pointcloud = rs.pointcloud() # type: rs.pointcloud
-	points = rs.points() # typr: rs.points
+	points = rs.points() # type: rs.points
 
 	config = rs.config() # type: rs.config
 	config.enable_stream(rs.stream.depth, resolution[0], resolution[1], rs.format.z16, fps)
