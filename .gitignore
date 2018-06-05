@@ -107,6 +107,7 @@ ENV/
 *_*.ply
 *output.ply
 **/output/*
+**/data/*
 *.pointcloud.ply
 *.pkl
 *.npz
