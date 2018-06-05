@@ -4,13 +4,8 @@ import pickle
 import sys
 import time
 
-import attr
 import numpy as np
 import pyrealsense2 as rs
-
-@attr.s
-class RSIntrinsics(object):
-	ppx = attr.ib(type=float)
 
 
 def intrinsics_to_dict(intrinsics: rs.intrinsics):
