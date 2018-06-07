@@ -189,8 +189,8 @@ def main(camNameA='camA', camNameB='camB', readMatch='', output='./output/'):
 		kpA, desA, kpB, desB, matches, matchesMask = loadStereoMatchingResult(readMatch)
 	else:
 		kpA, desA, kpB, desB, matches, matchesMask = matchImages(imgA, imgB)
+		saveStereoMatchingResult(kpA, desA, kpB, desB, matches, matchesMask, os.path.join(output, 'stereoMatch.pkl'))
 
-	saveStereoMatchingResult(kpA, desA, kpB, desB, matches, matchesMask, os.path.join(output, 'stereoMatch.pkl'))
 	drawMatchedImages(imgA, kpA, imgB, kpB, matches, matchesMask)
 
 	return
