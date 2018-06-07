@@ -148,7 +148,7 @@ def matchImages(imgA, imgB, nFeatures=50000, qualityThreshold=0.8):
 	kpB, desB = orb.detectAndCompute(imgB, None)
 
 	matches = flann.knnMatch(desA, desB, k=2)
-	matchesMask = [[0, 0] for i in range(len(matches))]
+	matchesMask = [[0, 0]] * len(matches)
 
 	for i, (m, n) in enumerate(matches):
 		if m.distance < qualityThreshold * n.distance:
