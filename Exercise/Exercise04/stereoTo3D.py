@@ -203,6 +203,9 @@ def main(camNameA='camA', camNameB='camB', readMatch='', output='./'):
 	ukpA, kpA_raw = undistortKeypoints(camA, kpA)
 	ukpB, kpB_raw = undistortKeypoints(camB, kpB)
 
+	directionsA = np.linalg.inv(camA.rotation).dot(ukpA.T).T
+	directionsB = np.linalg.inv(camB.rotation).dot(ukpB.T).T
+
 	return
 
 def main_cli(args=None):
