@@ -210,8 +210,8 @@ def main(camNameA='camA', camNameB='camB', readMatch='', output='./'):
 	# not sure about calculation of direction vectors from undistorted points
 	# the third coordinate for each undistorted u,v point is set to 1 in the
 	# previous function call, which I'm not sure about.
-	directionsA = (ukpA - camA.translation).dot(np.linalg.inv(camA.rotation).T) - cA
-	directionsB = (ukpB - camB.translation).dot(np.linalg.inv(camB.rotation).T) - cA
+	directionsA = (ukpA - camA.translation).dot(np.linalg.inv(camA.rotation).T)
+	directionsB = (ukpB - camB.translation).dot(np.linalg.inv(camB.rotation).T)
 
 	# vector from second to first projection center
 	directionCACB = cB - cA
