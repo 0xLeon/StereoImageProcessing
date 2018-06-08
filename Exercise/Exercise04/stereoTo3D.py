@@ -161,7 +161,7 @@ def undistortKeypoints(camera, keypoints):
 
 	points = np.array([[list(keypoint.pt) + [1] for keypoint in keypoints]]) # type: np.ndarray
 	undistortedPoints = cv.undistortPoints(points[:, :, :2], camera.projection, camera.distortion)[0]
-	undistortedPoints = np.array([[x[0], x[1], 1] for x in undistortedPoints])
+	undistortedPoints = np.array([[x[0], x[1], 1] for x in undistortedPoints]) # make homogeneous; is this right?
 
 	return undistortedPoints, points[0]
 
@@ -197,15 +197,23 @@ def main(camNameA='camA', camNameB='camB', readMatch='', output='./'):
 		kpA, desA, kpB, desB, matches, matchesMask = matchImages(imgA, imgB)
 		saveStereoMatchingResult(kpA, desA, kpB, desB, matches, matchesMask, os.path.join(output, 'stereoMatch.pkl'))
 
+	# T' = -R^-1 * T
 	cA = -np.linalg.inv(camA.rotation).dot(camA.translation)
 	cB = -np.linalg.inv(camB.rotation).dot(camB.translation)
 
+	# undistort image coordinates for all matches, with K^-1 already applied
+	# including the bad ones, filter later
 	ukpA, kpA_raw = undistortKeypoints(camA, kpA)
 	ukpB, kpB_raw = undistortKeypoints(camB, kpB)
 
+	# error probably here
+	# not sure about calculation of direction vectors from undistorted points
+	# the third coordinate for each undistorted u,v point is set to 1 in the
+	# previous function call, which I'm not sure about.
 	directionsA = np.linalg.inv(camA.rotation).dot(ukpA.T).T
 	directionsB = np.linalg.inv(camB.rotation).dot(ukpB.T).T
 
+	# vector from second to first projection center
 	directionCACB = cB - cA
 
 	distances = [0.0] * len(matches)
