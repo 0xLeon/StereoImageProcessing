@@ -160,8 +160,10 @@ def undistortKeypoints(camera, keypoints):
 	# type: (CameraData, List[cv.KeyPoint]) -> (np.ndarray, np.ndarray)
 
 	points = np.array([[list(keypoint.pt) + [1] for keypoint in keypoints]]) # type: np.ndarray
+	undistortedPoints = cv.undistortPoints(points[:, :, :2], camera.projection, camera.distortion)[0]
+	undistortedPoints = np.array([[x[0], x[1], 1] for x in undistortedPoints])
 
-	return cv.undistortPoints(points[:, :, :2], camera.projection, camera.distortion)[0], points[0]
+	return undistortedPoints, points[0]
 
 def generatePointcloud():
 	pass
