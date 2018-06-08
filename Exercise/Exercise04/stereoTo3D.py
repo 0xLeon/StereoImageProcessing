@@ -156,8 +156,6 @@ def matchImages(imgA, imgB, nFeatures=50000, qualityThreshold=0.8):
 
 	return kpA, desA, kpB, desB, matches, matchesMask
 
-def generateDisparityMap():
-	pass
 
 def generatePointcloud():
 	pass
