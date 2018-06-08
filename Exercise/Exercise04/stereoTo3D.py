@@ -181,7 +181,7 @@ def drawMatchedImages(imgA, kpA, imgB, kpB, matches, matchesMask):
 	plt.imshow(img)
 	plt.show()
 
-def main(camNameA='camA', camNameB='camB', readMatch='', output='./output/'):
+def main(camNameA='camA', camNameB='camB', readMatch='', output='./'):
 	if output and not os.path.isdir(output):
 		os.makedirs(output)
 
@@ -213,7 +213,7 @@ def main_cli(args=None):
 	parser.add_argument('--camA', default='camA')
 	parser.add_argument('--camB', default='camB')
 	parser.add_argument('--readmatch', default='')
-	parser.add_argument('--output', default='./output/')
+	parser.add_argument('--output', default='./')
 	args = parser.parse_args(args)
 
 	main(args.camA, args.camB, args.readmatch, args.output)
