@@ -156,6 +156,12 @@ def matchImages(imgA, imgB, nFeatures=50000, qualityThreshold=0.8):
 
 	return kpA, desA, kpB, desB, matches, matchesMask
 
+def undistortKeypoints(camera, keypoints):
+	# type: (CameraData, List[cv.KeyPoint]) -> (np.ndarray, np.ndarray)
+
+	points = np.array([[list(keypoint.pt) + [1] for keypoint in keypoints]]) # type: np.ndarray
+
+	return cv.undistortPoints(points[:, :, :2], camera.projection, camera.distortion)[0], points[0]
 
 def generatePointcloud():
 	pass
