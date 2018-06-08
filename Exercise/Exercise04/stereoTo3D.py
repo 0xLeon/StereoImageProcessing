@@ -223,8 +223,16 @@ def main(camNameA='camA', camNameB='camB', readMatch='', output='./'):
 		if mask[0] != 1:
 			continue
 
-		D = cA + dA * ((-(dA.dot(dB) * dB.dot(directionCACB)) + dA.dot(directionCACB) * dB.dot(dB)) / (dA.dot(dA) * dB.dot(dB) - dA.dot(dB) * dA.dot(dB)))
-		E = cB + dB * ((dA.dot(dB) * dA.dot(directionCACB) - dB.dot(directionCACB) * dA.dot(dA)) / (dA.dot(dA) * dB.dot(dB) - dA.dot(dB) * dA.dot(dB)))
+		factorA = ((-(dA.dot(dB) * dB.dot(directionCACB)) + dA.dot(directionCACB) * dB.dot(dB)) / (dA.dot(dA) * dB.dot(dB) - dA.dot(dB) * dA.dot(dB)))
+		factorB = ((dA.dot(dB) * dA.dot(directionCACB) - dB.dot(directionCACB) * dA.dot(dA)) / (dA.dot(dA) * dB.dot(dB) - dA.dot(dB) * dA.dot(dB)))
+
+		# commented out because this removes all points due to
+		# bugs in previous calculations (probably direction vectors)
+		# if factorA < 0 or factorB < 0:
+		# 	continue
+
+		D = cA + dA * factorA
+		E = cB + dB * factorB
 
 		distances[i] = np.linalg.norm(E - D)
 
