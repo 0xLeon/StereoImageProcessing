@@ -206,6 +206,28 @@ def main(camNameA='camA', camNameB='camB', readMatch='', output='./'):
 	directionsA = np.linalg.inv(camA.rotation).dot(ukpA.T).T
 	directionsB = np.linalg.inv(camB.rotation).dot(ukpB.T).T
 
+	directionCACB = cB - cA
+
+	distances = [0.0] * len(matches)
+	vertices = []
+
+	for keypointA, dA, keypointB, dB, mask, i in zip(kpA, directionsA, kpB, directionsB, matchesMask, range(len(matches))):
+		if mask[0] != 1:
+			continue
+
+		D = cA + dA * ((-(dA.dot(dB) * dB.dot(directionCACB)) + dA.dot(directionCACB) * dB.dot(dB)) / (dA.dot(dA) * dB.dot(dB) - dA.dot(dB) * dA.dot(dB)))
+		E = cB + dB * ((dA.dot(dB) * dA.dot(directionCACB) - dB.dot(directionCACB) * dA.dot(dA)) / (dA.dot(dA) * dB.dot(dB) - dA.dot(dB) * dA.dot(dB)))
+
+		distances[i] = np.linalg.norm(E - D)
+
+		if distances[i] <= 1:
+			point = D + 0.5 * (E - D)
+			vertices.append(tuple(point))
+
+	plyVertices = np.array(vertices, dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4')])
+	plyVertices = plyfile.PlyElement.describe(plyVertices, 'vertex')
+	plyfile.PlyData([plyVertices]).write(os.path.join(output, 'output.ply'))
+
 	return
 
 def main_cli(args=None):
