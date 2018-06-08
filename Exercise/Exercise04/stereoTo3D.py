@@ -219,7 +219,7 @@ def main(camNameA='camA', camNameB='camB', readMatch='', output='./'):
 	distances = [0.0] * len(matches)
 	vertices = []
 
-	for keypointA, dA, keypointB, dB, mask, i in zip(kpA, directionsA, kpB, directionsB, matchesMask, range(len(matches))):
+	for dA, dB, mask, i in zip(directionsA, directionsB, matchesMask, range(len(matches))):
 		if mask[0] != 1:
 			continue
 
