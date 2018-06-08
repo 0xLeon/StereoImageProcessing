@@ -219,7 +219,7 @@ def main(camNameA='camA', camNameB='camB', readMatch='', output='./'):
 	distances = [0.0] * len(matches)
 	vertices = []
 
-	for dA, dB, mask, i in zip(directionsA, directionsB, matchesMask, range(len(matches))):
+	for dA, dB, kp, mask, i in zip(directionsA, directionsB, kpA_raw, matchesMask, range(len(matches))):
 		if mask[0] != 1:
 			continue
 
@@ -230,9 +230,9 @@ def main(camNameA='camA', camNameB='camB', readMatch='', output='./'):
 
 		if distances[i] <= 1:
 			point = D + 0.5 * (E - D)
-			vertices.append(tuple(point))
+			vertices.append(tuple(itertools.chain(tuple(point), imgA[kp[1], kp[0]][::-1])))
 
-	plyVertices = np.array(vertices, dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4')])
+	plyVertices = np.array(vertices, dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4'), ('red', 'u1'), ('green', 'u1'), ('blue', 'u1')])
 	plyVertices = plyfile.PlyElement.describe(plyVertices, 'vertex')
 	plyfile.PlyData([plyVertices]).write(os.path.join(output, 'output.ply'))
 
