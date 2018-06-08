@@ -195,6 +195,11 @@ def main(camNameA='camA', camNameB='camB', readMatch='', output='./output/'):
 		kpA, desA, kpB, desB, matches, matchesMask = matchImages(imgA, imgB)
 		saveStereoMatchingResult(kpA, desA, kpB, desB, matches, matchesMask, os.path.join(output, 'stereoMatch.pkl'))
 
+	cA = -np.linalg.inv(camA.rotation).dot(camA.translation)
+	cB = -np.linalg.inv(camB.rotation).dot(camB.translation)
+
+	ukpA, kpA_raw = undistortKeypoints(camA, kpA)
+	ukpB, kpB_raw = undistortKeypoints(camB, kpB)
 
 	return
 
