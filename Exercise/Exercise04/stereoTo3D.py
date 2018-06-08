@@ -163,7 +163,7 @@ def undistortKeypoints(camera, keypoints):
 	undistortedPoints = cv.undistortPoints(points[:, :, :2], camera.projection, camera.distortion)[0]
 	undistortedPoints = np.array([[x[0], x[1], 1] for x in undistortedPoints]) # make homogeneous; is this right?
 
-	return undistortedPoints, points[0]
+	return undistortedPoints, points[0].astype(int)
 
 def generatePointcloud():
 	pass
