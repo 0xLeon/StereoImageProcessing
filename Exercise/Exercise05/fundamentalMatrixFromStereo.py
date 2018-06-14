@@ -3,6 +3,7 @@ import os
 import pickle
 
 import cv2
+import matplotlib.pyplot as plt
 import numpy as np
 
 #region Disk Saving
@@ -101,6 +102,19 @@ def matchImages(imgA, imgB, nFeatures=50000, qualityThreshold=0.8):
 
 	return kpA, desA, kpB, desB, matches, matchesMask
 
+def drawMatchedImages(imgA, kpA, imgB, kpB, matches, matchesMask):
+	drawParams = dict(
+		matchColor=(0, 255, 0),
+		singlePointColor=(255, 0, 0),
+		matchesMask=matchesMask,
+		flags=0,
+	)
+
+	img = cv2.drawMatchesKnn(imgA, kpA, imgB, kpB, matches, None, **drawParams)
+
+	plt.imshow(img)
+	plt.show()
+
 def main(images=None, readMatch='', output='./'):
 	if images is None:
 		images = ['a.jpg', 'b.jpg']
@@ -113,6 +127,8 @@ def main(images=None, readMatch='', output='./'):
 	else:
 		kpA, desA, kpB, desB, matches, matchesMask = matchImages(imgA, imgB, qualityThreshold=0.65)
 		saveStereoMatchingResult(kpA, desA, kpB, desB, matches, matchesMask, os.path.join(output, 'stereoMatch.pkl'))
+
+	drawMatchedImages(imgA, kpA, imgB, kpB, matches, matchesMask)
 
 def main_cli(args=None):
 	parser = argparse.ArgumentParser()
