@@ -3,8 +3,12 @@ import argparse
 import cv2
 import numpy as np
 
-def main(images):
-	pass
+def main(images=None):
+	if images is None:
+		images = ['a.jpg', 'b.jpg']
+
+	imgA = cv2.imread(images[0])
+	imgB = cv2.imread(images[1])
 
 def main_cli(args=None):
 	parser = argparse.ArgumentParser()
