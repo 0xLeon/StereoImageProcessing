@@ -103,6 +103,10 @@ def matchImages(imgA, imgB, nFeatures=50000, qualityThreshold=0.8):
 	return kpA, desA, kpB, desB, matches, matchesMask
 
 def drawMatchedImages(imgA, kpA, imgB, kpB, matches, matchesMask):
+	while not isinstance(matches[0], cv2.DMatch):
+		matches = [match[0] for match in matches]
+		matchesMask = [mask[0] for mask in matchesMask]
+
 	drawParams = dict(
 		matchColor=(0, 255, 0),
 		singlePointColor=(255, 0, 0),
@@ -110,7 +114,7 @@ def drawMatchedImages(imgA, kpA, imgB, kpB, matches, matchesMask):
 		flags=0,
 	)
 
-	img = cv2.drawMatchesKnn(imgA, kpA, imgB, kpB, matches, None, **drawParams)
+	img = cv2.drawMatches(imgA, kpA, imgB, kpB, matches, None, **drawParams)
 
 	plt.imshow(img)
 	plt.show()
