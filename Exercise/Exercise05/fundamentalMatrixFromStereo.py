@@ -213,7 +213,7 @@ def calculateFundamentalMatrixRansac(kpA, kpB, matches, matchesMask=None, iterat
 
 	return F, candidateSets[bestConsensusSetIdx]
 
-def main(images=None, readMatch='', output='./'):
+def main(images=None, readMatch='', output='./', iterations=1000, epsilon=0.01):
 	if images is None:
 		images = ['a.jpg', 'b.jpg']
 
@@ -231,7 +231,7 @@ def main(images=None, readMatch='', output='./'):
 			saveStereoMatchingResult(kpA, desA, kpB, desB, matches, matchesMask, os.path.join(output, 'stereoMatch.pkl'))
 
 	with TimeMeasurement('Calculate Fundamental Matrix with RANSAC'):
-		F, cMatches = calculateFundamentalMatrixRansac(kpA, kpB, matches, matchesMask)
+		F, cMatches = calculateFundamentalMatrixRansac(kpA, kpB, matches, matchesMask, iterations, epsilon)
 
 	imgMatch = drawMatchedImages(imgA, kpA, imgB, kpB, cMatches)
 
@@ -242,13 +242,15 @@ def main_cli(args=None):
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--readmatch', default='')
 	parser.add_argument('--output', default='./')
+	parser.add_argument('--ransacItertions', default=1000)
+	parser.add_argument('--ransacEpsilon', default=0.01)
 	parser.add_argument('images', default=['a.jpg', 'b.jpg'], nargs='*')
 	args = parser.parse_args(args)
 
 	if len(args.images) != 2:
 		parser.error('Specifiy exactly two images!')
 
-	main(args.images, args.readmatch, args.output)
+	main(args.images, args.readmatch, args.output, args.ransacItertions, args.ransacEpsilon)
 
 if __name__ == '__main__':
 	main_cli()
