@@ -119,6 +119,22 @@ def drawMatchedImages(imgA, kpA, imgB, kpB, matches, matchesMask):
 	plt.imshow(img)
 	plt.show()
 
+def calculateFundamentalMatrix(kpA, kpB):
+	A = np.array([
+		[b.pt[0] * a.pt[0], b.pt[0] * a.pt[1], b.pt[0], b.pt[1] * a.pt[0], b.pt[1] * a.pt[1], b.pt[1], a.pt[0], a.pt[1], 1]
+		for a, b in zip(kpA, kpB)
+	])
+	A2 = A.T.dot(A)
+
+	eigVal, eigVec = np.linalg.eig(A2)
+
+	F = eigVec[:, np.argmin(eigVal)].reshape(3, 3)
+	U, S, VT = np.linalg.svd(F)
+	S[-1] = 0
+	F = (U * S).dot(VT)
+
+	return (F / F[-1, -1])
+
 def main(images=None, readMatch='', output='./'):
 	if images is None:
 		images = ['a.jpg', 'b.jpg']
