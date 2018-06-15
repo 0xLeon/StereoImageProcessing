@@ -1,10 +1,35 @@
 import argparse
 import os
 import pickle
+import time
 
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+
+class TimeMeasurement(object):
+	def __init__(self, operation, printStd=True):
+		self._t0 = 0
+		self._t1 = 0
+
+		self._operation = operation
+		self._printStd = printStd
+
+	@property
+	def delta(self):
+		return self._t1 - self._t0
+
+	def __enter__(self):
+		self._t1 = 0
+		self._t0 = time.perf_counter()
+
+		return self
+
+	def __exit__(self, *args):
+		self._t1 = time.perf_counter()
+
+		if self._printStd:
+			print('Operation \'{!s}\' took {:.4f} s'.format(self._operation, self.delta))
 
 #region Disk Saving
 
@@ -143,10 +168,14 @@ def main(images=None, readMatch='', output='./'):
 	imgB = cv2.imread(images[1])
 
 	if readMatch:
-		kpA, desA, kpB, desB, matches, matchesMask = loadStereoMatchingResult(readMatch)
+		with TimeMeasurement('Read Matching Result'):
+			kpA, desA, kpB, desB, matches, matchesMask = loadStereoMatchingResult(readMatch)
 	else:
-		kpA, desA, kpB, desB, matches, matchesMask = matchImages(imgA, imgB, qualityThreshold=0.65)
-		saveStereoMatchingResult(kpA, desA, kpB, desB, matches, matchesMask, os.path.join(output, 'stereoMatch.pkl'))
+		with TimeMeasurement('Feature Matching'):
+			kpA, desA, kpB, desB, matches, matchesMask = matchImages(imgA, imgB, qualityThreshold=0.65)
+
+		with TimeMeasurement('Save Matching Result'):
+			saveStereoMatchingResult(kpA, desA, kpB, desB, matches, matchesMask, os.path.join(output, 'stereoMatch.pkl'))
 
 	drawMatchedImages(imgA, kpA, imgB, kpB, matches, matchesMask)
 
