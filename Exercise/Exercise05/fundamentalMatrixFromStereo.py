@@ -196,16 +196,16 @@ def calculateFundamentalMatrixRansac(kpA, kpB, matches, matchesMask=None, iterat
 			candidateSets.append(candidateSet)
 
 	if not candidateSets:
-		raise ValueError('Unable to calculate at least one concencus set')
+		raise ValueError('Unable to calculate at least one consensus set')
 
-	bestConcensusSetIdx = np.argmax([len(concencusSet) for concencusSet in candidateSets])
+	bestConsensusSetIdx = np.argmax([len(consensusSet) for consensusSet in candidateSets])
 
-	concencusKpA = [kpA[match.queryIdx] for match in candidateSets[bestConcensusSetIdx]]
-	concencusKpB = [kpB[match.trainIdx] for match in candidateSets[bestConcensusSetIdx]]
+	consensusKpA = [kpA[match.queryIdx] for match in candidateSets[bestConsensusSetIdx]]
+	consensusKpB = [kpB[match.trainIdx] for match in candidateSets[bestConsensusSetIdx]]
 
-	F = calculateFundamentalMatrix(concencusKpA, concencusKpB)
+	F = calculateFundamentalMatrix(consensusKpA, consensusKpB)
 
-	return F, candidateSets[bestConcensusSetIdx]
+	return F, candidateSets[bestConsensusSetIdx]
 
 def main(images=None, readMatch='', output='./'):
 	if images is None:
