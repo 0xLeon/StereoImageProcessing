@@ -229,6 +229,9 @@ def main(images=None, readMatch='', output='./'):
 
 	imgMatch = drawMatchedImages(imgA, kpA, imgB, kpB, cMatches)
 
+	np.savetxt(os.path.join(output, 'fmat.txt'), F)
+	cv2.imwrite(os.path.join(output, 'matches.png'), imgMatch)
+
 def main_cli(args=None):
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--readmatch', default='')
