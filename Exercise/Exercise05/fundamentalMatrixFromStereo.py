@@ -159,6 +159,54 @@ def calculateFundamentalMatrix(kpA, kpB):
 
 	return (F / F[-1, -1])
 
+def calculateFundamentalMatrixRansac(kpA, kpB, matches, matchesMask=None, iterations=1000, epsilon=0.01):
+	while not isinstance(matches[0], cv2.DMatch):
+		matches = [match[0] for match in matches]
+
+		if matchesMask is not None:
+			matchesMask = [mask[0] for mask in matchesMask]
+
+	if matchesMask is not None:
+		matches = np.array([match for match, mask in zip(matches, matchesMask) if mask == 1])
+
+	iterations = int(iterations)
+	epsilon = float(epsilon)
+
+	candidateSets = []
+
+	for _ in range(iterations):
+		matchesChoice = np.random.choice(matches, 8, False)
+		kpAChoice = [kpA[match.queryIdx] for match in matchesChoice]
+		kpBChoice = [kpB[match.trainIdx] for match in matchesChoice]
+
+		F = calculateFundamentalMatrix(kpAChoice, kpBChoice)
+
+		candidateSet = []
+
+		for match in matches:
+			a = np.array(kpA[match.queryIdx].pt + (1,))
+			b = np.array(kpB[match.trainIdx].pt + (1,))
+
+			d = np.abs(b.dot(F.dot(a)))
+
+			if d < epsilon:
+				candidateSet.append(match)
+
+		if len(candidateSet) >= 8:
+			candidateSets.append(candidateSet)
+
+	if not candidateSets:
+		raise ValueError('Unable to calculate at least one concencus set')
+
+	bestConcensusSetIdx = np.argmax([len(concencusSet) for concencusSet in candidateSets])
+
+	concencusKpA = [kpA[match.queryIdx] for match in candidateSets[bestConcensusSetIdx]]
+	concencusKpB = [kpB[match.trainIdx] for match in candidateSets[bestConcensusSetIdx]]
+
+	F = calculateFundamentalMatrix(concencusKpA, concencusKpB)
+
+	return F, concencusKpA, concencusKpB, candidateSets[bestConcensusSetIdx]
+
 def main(images=None, readMatch='', output='./'):
 	if images is None:
 		images = ['a.jpg', 'b.jpg']
@@ -175,6 +223,9 @@ def main(images=None, readMatch='', output='./'):
 
 		with TimeMeasurement('Save Matching Result'):
 			saveStereoMatchingResult(kpA, desA, kpB, desB, matches, matchesMask, os.path.join(output, 'stereoMatch.pkl'))
+
+	with TimeMeasurement('Calculate Fundamental Matrix with RANSAC'):
+		F, ckpA, ckpB, cMatches = calculateFundamentalMatrixRansac(kpA, kpB, matches, matchesMask)
 
 	drawMatchedImages(imgA, kpA, imgB, kpB, matches, matchesMask)
 
