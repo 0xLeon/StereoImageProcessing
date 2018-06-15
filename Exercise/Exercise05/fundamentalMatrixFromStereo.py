@@ -227,7 +227,7 @@ def main(images=None, readMatch='', output='./'):
 	with TimeMeasurement('Calculate Fundamental Matrix with RANSAC'):
 		F, cMatches = calculateFundamentalMatrixRansac(kpA, kpB, matches, matchesMask)
 
-	drawMatchedImages(imgA, kpA, imgB, kpB, matches, matchesMask)
+	imgMatch = drawMatchedImages(imgA, kpA, imgB, kpB, cMatches)
 
 def main_cli(args=None):
 	parser = argparse.ArgumentParser()
