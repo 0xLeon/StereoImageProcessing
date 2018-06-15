@@ -134,14 +134,7 @@ def drawMatchedImages(imgA, kpA, imgB, kpB, matches, matchesMask=None):
 		if matchesMask is not None:
 			matchesMask = [mask[0] for mask in matchesMask]
 
-	drawParams = dict(
-		matchColor=(0, 255, 0),
-		singlePointColor=(255, 0, 0),
-		matchesMask=matchesMask,
-		flags=0,
-	)
-
-	return cv2.drawMatches(imgA, kpA, imgB, kpB, matches, None, **drawParams)
+	return cv2.drawMatches(imgA, kpA, imgB, kpB, matches, None, matchesMask=matchesMask, flags=0)
 
 def calculateFundamentalMatrix(npkpA, npkpB):
 	A = np.array([
