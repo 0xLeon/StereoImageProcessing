@@ -166,6 +166,8 @@ def calculateFundamentalMatrixRansac(kpA, kpB, matches, matchesMask=None, iterat
 		if matchesMask is not None:
 			matchesMask = [mask[0] for mask in matchesMask]
 
+	originalMatchesLen = len(matches)
+
 	if matchesMask is not None:
 		matches = np.array([match for match, mask in zip(matches, matchesMask) if mask == 1])
 
@@ -173,6 +175,16 @@ def calculateFundamentalMatrixRansac(kpA, kpB, matches, matchesMask=None, iterat
 	epsilon = float(epsilon)
 
 	candidateSets = []
+
+	npkpA = np.zeros((originalMatchesLen, 3))
+	npkpB = np.zeros((originalMatchesLen, 3))
+
+	npkpA[:, 2] = 1.0
+	npkpB[:, 2] = 1.0
+
+	for i, (pA, pB) in enumerate(zip(kpA, kpB)):
+		npkpA[i, :2] = pA.pt
+		npkpB[i, :2] = pB.pt
 
 	for _ in range(iterations):
 		matchesChoice = np.random.choice(matches, 8, False)
@@ -184,8 +196,8 @@ def calculateFundamentalMatrixRansac(kpA, kpB, matches, matchesMask=None, iterat
 		candidateSet = []
 
 		for match in matches:
-			a = np.array(kpA[match.queryIdx].pt + (1,))
-			b = np.array(kpB[match.trainIdx].pt + (1,))
+			a = npkpA[match.queryIdx]
+			b = npkpB[match.trainIdx]
 
 			d = np.abs(b.dot(F.dot(a)))
 
