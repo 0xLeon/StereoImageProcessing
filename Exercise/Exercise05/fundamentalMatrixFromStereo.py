@@ -181,8 +181,9 @@ def calculateFundamentalMatrixRansac(kpA, kpB, matches, matchesMask=None, iterat
 
 	for _ in range(iterations):
 		matchesChoice = np.random.choice(matches, 8, False)
-		kpAChoice = [npkpA[match.queryIdx] for match in matchesChoice]
-		kpBChoice = [npkpB[match.trainIdx] for match in matchesChoice]
+		kpIdx = np.array([[match.queryIdx, match.trainIdx] for match in matchesChoice])
+		kpAChoice = npkpA[kpIdx[:, 0]]
+		kpBChoice = npkpB[kpIdx[:, 1]]
 
 		F = calculateFundamentalMatrix(kpAChoice, kpBChoice)
 
@@ -204,9 +205,10 @@ def calculateFundamentalMatrixRansac(kpA, kpB, matches, matchesMask=None, iterat
 		raise ValueError('Unable to calculate at least one consensus set')
 
 	bestConsensusSetIdx = np.argmax([len(consensusSet) for consensusSet in candidateSets])
+	kpIdx = np.array([[match.queryIdx, match.trainIdx] for match in candidateSets[bestConsensusSetIdx]])
 
-	consensusKpA = [npkpA[match.queryIdx] for match in candidateSets[bestConsensusSetIdx]]
-	consensusKpB = [npkpB[match.trainIdx] for match in candidateSets[bestConsensusSetIdx]]
+	consensusKpA = npkpA[kpIdx[:, 0]]
+	consensusKpB = npkpB[kpIdx[:, 1]]
 
 	F = calculateFundamentalMatrix(consensusKpA, consensusKpB)
 
