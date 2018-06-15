@@ -141,10 +141,7 @@ def drawMatchedImages(imgA, kpA, imgB, kpB, matches, matchesMask=None):
 		flags=0,
 	)
 
-	img = cv2.drawMatches(imgA, kpA, imgB, kpB, matches, None, **drawParams)
-
-	plt.imshow(img)
-	plt.show()
+	return cv2.drawMatches(imgA, kpA, imgB, kpB, matches, None, **drawParams)
 
 def calculateFundamentalMatrix(kpA, kpB):
 	A = np.array([
