@@ -205,7 +205,7 @@ def calculateFundamentalMatrixRansac(kpA, kpB, matches, matchesMask=None, iterat
 
 	F = calculateFundamentalMatrix(concencusKpA, concencusKpB)
 
-	return F, concencusKpA, concencusKpB, candidateSets[bestConcensusSetIdx]
+	return F, candidateSets[bestConcensusSetIdx]
 
 def main(images=None, readMatch='', output='./'):
 	if images is None:
@@ -225,7 +225,7 @@ def main(images=None, readMatch='', output='./'):
 			saveStereoMatchingResult(kpA, desA, kpB, desB, matches, matchesMask, os.path.join(output, 'stereoMatch.pkl'))
 
 	with TimeMeasurement('Calculate Fundamental Matrix with RANSAC'):
-		F, ckpA, ckpB, cMatches = calculateFundamentalMatrixRansac(kpA, kpB, matches, matchesMask)
+		F, cMatches = calculateFundamentalMatrixRansac(kpA, kpB, matches, matchesMask)
 
 	drawMatchedImages(imgA, kpA, imgB, kpB, matches, matchesMask)
 
