@@ -143,10 +143,10 @@ def drawMatchedImages(imgA, kpA, imgB, kpB, matches, matchesMask=None):
 
 	return cv2.drawMatches(imgA, kpA, imgB, kpB, matches, None, **drawParams)
 
-def calculateFundamentalMatrix(kpA, kpB):
+def calculateFundamentalMatrix(npkpA, npkpB):
 	A = np.array([
-		[b.pt[0] * a.pt[0], b.pt[0] * a.pt[1], b.pt[0], b.pt[1] * a.pt[0], b.pt[1] * a.pt[1], b.pt[1], a.pt[0], a.pt[1], 1]
-		for a, b in zip(kpA, kpB)
+		[b[0] * a[0], b[0] * a[1], b[0], b[1] * a[0], b[1] * a[1], b[1], a[0], a[1], 1]
+		for a, b in zip(npkpA, npkpB)
 	])
 	A2 = A.T.dot(A)
 
@@ -188,8 +188,8 @@ def calculateFundamentalMatrixRansac(kpA, kpB, matches, matchesMask=None, iterat
 
 	for _ in range(iterations):
 		matchesChoice = np.random.choice(matches, 8, False)
-		kpAChoice = [kpA[match.queryIdx] for match in matchesChoice]
-		kpBChoice = [kpB[match.trainIdx] for match in matchesChoice]
+		kpAChoice = [npkpA[match.queryIdx] for match in matchesChoice]
+		kpBChoice = [npkpB[match.trainIdx] for match in matchesChoice]
 
 		F = calculateFundamentalMatrix(kpAChoice, kpBChoice)
 
@@ -212,8 +212,8 @@ def calculateFundamentalMatrixRansac(kpA, kpB, matches, matchesMask=None, iterat
 
 	bestConsensusSetIdx = np.argmax([len(consensusSet) for consensusSet in candidateSets])
 
-	consensusKpA = [kpA[match.queryIdx] for match in candidateSets[bestConsensusSetIdx]]
-	consensusKpB = [kpB[match.trainIdx] for match in candidateSets[bestConsensusSetIdx]]
+	consensusKpA = [npkpA[match.queryIdx] for match in candidateSets[bestConsensusSetIdx]]
+	consensusKpB = [npkpB[match.trainIdx] for match in candidateSets[bestConsensusSetIdx]]
 
 	F = calculateFundamentalMatrix(consensusKpA, consensusKpB)
 
