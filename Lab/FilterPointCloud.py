@@ -1,5 +1,7 @@
 import argparse
 import enum
+import glob
+import os
 import re
 
 import numpy as np
@@ -72,7 +74,7 @@ def filterGarbage(vertices, minJump=5, garbageAxis=Axis.Z):
 
 	return vertices[vertices[:, garbageAxis.value] > limit]
 
-def main(filters):
+def main(plyfiles, filters):
 	pFilters = []
 
 	for pFilter in filters:
@@ -81,11 +83,24 @@ def main(filters):
 
 	# TODO: reduce filters to minimal necessary filter set
 
+	for ply in plyfiles:
+		v = PLYObject.PLYObject(ply).getVertices().T
+		selector = np.array([True] * v.shape[0])
+
+		for pFilter in pFilters:
+			selector = selector & pFilter.accept(v)
+
+		v = v[selector]
+
+		plyPath = os.path.splitext(os.path.abspath(ply))[0]
+		plyPathNew = '{:s}.filtered.ply'.format(plyPath)
+		PLYObject.PLYObject.from_vertices(v).write(plyPathNew)
+
 def main_cli(args=None):
 	parser = argparse.ArgumentParser()
 	args = parser.parse_args(args)
 
-	main([])
+	main([], [])
 
 if __name__ == '__main__':
 	main_cli()
