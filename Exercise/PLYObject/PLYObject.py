@@ -124,8 +124,8 @@ class PLYObject:
 
 		return plyObject
 
-	def fitSphere(self):
-		vertices = self.getVertices() # type: np.ndarray
+	def fitSphere(self, vertices=None):
+		vertices = self.getVertices() if vertices is None else vertices # type: np.ndarray
 		centerEstimate = vertices.mean(axis=1)
 		radiusEstimate = np.linalg.norm(vertices.T - centerEstimate, axis=1).mean()
 		sphereParams = np.concatenate((centerEstimate, [radiusEstimate]))
@@ -142,8 +142,8 @@ class PLYObject:
 
 		return tuple(itertools.chain(result, (np.abs(delta).mean(),)))
 
-	def fitPlane(self):
-		vertices = self.getVertices() # type: np.ndarray
+	def fitPlane(self, vertices=None):
+		vertices = self.getVertices() if vertices is None else vertices # type: np.ndarray
 		samplePoints = vertices[:, np.random.choice(vertices.shape[1], 3, replace=False)].T
 		normal = np.cross(samplePoints[2] - samplePoints[0], samplePoints[1] - samplePoints[0])
 		d = (normal * samplePoints[0]).sum()
