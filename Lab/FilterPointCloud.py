@@ -2,7 +2,7 @@ import argparse
 import enum
 import re
 
-import plyfile
+import PLYObject
 
 class Axis(enum.Enum):
 	X = 0
