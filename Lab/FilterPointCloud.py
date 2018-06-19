@@ -2,6 +2,8 @@ import argparse
 import enum
 import re
 
+import numpy as np
+
 import PLYObject
 
 class Axis(enum.Enum):
@@ -20,12 +22,12 @@ class Operator(enum.Enum):
 class PointCloudFilter(object):
 	tokenRegex = re.compile(r'(?P<axis>[x-z])(?P<operator>[^\d\-]+)(?P<limit>-?\d+)', re.I)
 	operatorToMethod = {
-		Operator.GT: float.__gt__,
-		Operator.LT: float.__lt__,
-		Operator.GE: float.__ge__,
-		Operator.LE: float.__le__,
-		Operator.EQ: float.__eq__, # TODO: replace with robust float equality
-		Operator.NE: float.__ne__,
+		Operator.GT: np.ndarray.__gt__,
+		Operator.LT: np.ndarray.__lt__,
+		Operator.GE: np.ndarray.__ge__,
+		Operator.LE: np.ndarray.__le__,
+		Operator.EQ: np.ndarray.__eq__, # TODO: replace with robust float equality
+		Operator.NE: np.ndarray.__ne__,
 	}
 
 	def __init__(self, axis, operator, limit):
@@ -33,8 +35,8 @@ class PointCloudFilter(object):
 		self.operator = self.__class__.operatorToMethod[operator]
 		self.limit = limit
 
-	def accept(self, x):
-		return self.operator(float(x), self.limit)
+	def accept(self, points):
+		return self.operator(points[:, self.axis.value], self.limit)
 
 	@classmethod
 	def fromFilterString(cls, filterStr):
