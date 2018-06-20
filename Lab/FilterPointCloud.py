@@ -104,7 +104,7 @@ def parseFilters(filters):
 	pFilters = []
 
 	for pFilter in filters:
-		pFilter = PointCloudFilter.fromFilterString(pFilter)
+		pFilter = pFilter if isinstance(pFilter, PointCloudFilter) else PointCloudFilter.fromFilterString(pFilter)
 		pFilters.append(pFilter)
 
 	# TODO: reduce filters to minimal necessary filter set
