@@ -119,7 +119,7 @@ class PLYObject:
 		if dtype is None:
 			dtype = [('x', 'f4'), ('y', 'f4'), ('z', 'f4')]
 
-		if vertices and not isinstance(vertices[0], tuple):
+		if len(vertices) > 0 and not isinstance(vertices[0], tuple):
 			vertices = [tuple(v) for v in vertices]
 
 		plyVertices = np.array(vertices, dtype=dtype)
