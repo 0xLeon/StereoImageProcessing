@@ -5,7 +5,7 @@ import numpy as np
 import scipy.stats as st
 
 if __name__ == '__main__':
-	with open('DataFitErrors.pkl', 'rb') as f:
+	with open('./RealSense-D415-Data-01/Laser/PlaneFitErrorData.pkl', 'rb') as f:
 		data = pickle.load(f)
 
 	data = data['1280x720']
