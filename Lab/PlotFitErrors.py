@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as st
 
-if __name__ == '__main':
+if __name__ == '__main__':
 	with open('DataFitErrors.pkl', 'rb') as f:
 		data = pickle.load(f)
 
