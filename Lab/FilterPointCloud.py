@@ -74,27 +74,40 @@ def filterGarbage(vertices, minJump=5, garbageAxis=Axis.Z):
 
 	return vertices[vertices[:, garbageAxis.value] > limit]
 
-def main(plyfiles, filters):
+def parseFilters(filters):
 	pFilters = []
 
 	for pFilter in filters:
 		pFilter = PointCloudFilter.fromFilterString(pFilter)
 		pFilters.append(pFilter)
 
+	return pFilters
+
+def filterPLYObject(ply, filters):
+	# type: (PLYObject.PLYObject, List) -> PLYObject.PLYObject
+	v = ply.getVertices().T
+	v = filterGarbage(v)
+	selector = np.array([True] * v.shape[0])
+
+	for pFilter in filters:
+		selector = selector & pFilter.accept(v)
+
+	v = v[selector]
+
+	return PLYObject.PLYObject.from_vertices(v)
+
+def main(plyfiles, filters):
+	pFilters = parseFilters(filters)
+
 	# TODO: reduce filters to minimal necessary filter set
 
-	for ply in plyfiles:
-		v = PLYObject.PLYObject(ply).getVertices().T
-		selector = np.array([True] * v.shape[0])
+	for plyPath in plyfiles:
+		ply = PLYObject.PLYObject(plyPath)
+		newPly = filterPLYObject(ply, pFilters)
 
-		for pFilter in pFilters:
-			selector = selector & pFilter.accept(v)
-
-		v = v[selector]
-
-		plyPath = os.path.splitext(os.path.abspath(ply))[0]
-		plyPathNew = '{:s}.filtered.ply'.format(plyPath)
-		PLYObject.PLYObject.from_vertices(v).write(plyPathNew)
+		plyPathPart = os.path.splitext(os.path.abspath(ply))[0]
+		plyPathNew = '{:s}.filtered.ply'.format(plyPathPart)
+		newPly.write(plyPathNew)
 
 def main_cli(args=None):
 	parser = argparse.ArgumentParser()
