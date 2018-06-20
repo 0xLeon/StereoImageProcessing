@@ -57,7 +57,7 @@ class PointCloudFilter(object):
 
 		return cls(axis, operator, limit)
 
-def filterGarbage(vertices, minJump=5, garbageAxis=Axis.Z):
+def filterGarbageOld1(vertices, minJump=5, garbageAxis=Axis.Z):
 	# type: (np.ndarray) -> np.ndarray
 	uv2 = np.unique(np.sort(vertices[:, garbageAxis.value]))
 	duv2 = np.abs(np.diff(uv2))
@@ -67,6 +67,32 @@ def filterGarbage(vertices, minJump=5, garbageAxis=Axis.Z):
 	if delta < (duv2[:(i+1)].mean() * minJump):
 		return vertices
 
+	limit = uv2[i] + delta / 2
+
+	if (limit - uv2[i]) > 0:
+		return vertices[vertices[:, garbageAxis.value] < limit]
+
+	return vertices[vertices[:, garbageAxis.value] > limit]
+
+def filterGarbage(vertices, minJump=5, rounds=8, garbageAxis=Axis.Z):
+	# type: (np.ndarray) -> np.ndarray
+	uv2 = np.unique(np.sort(vertices[:, garbageAxis.value]))
+	duv2 = np.abs(np.diff(uv2))
+
+	i = len(duv2)
+
+	for _ in range(rounds):
+		indexes = (duv2 > duv2[:i].mean() * minJump).nonzero()[0]
+
+		if indexes.size == 0 or i == indexes[0]:
+			break
+
+		i = indexes[0]
+
+	if i == len(duv2):
+		return vertices
+
+	delta = uv2[i + 1] - uv2[i]
 	limit = uv2[i] + delta / 2
 
 	if (limit - uv2[i]) > 0:
