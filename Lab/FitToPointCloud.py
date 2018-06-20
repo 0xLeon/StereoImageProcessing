@@ -8,7 +8,7 @@ import time
 import FilterPointCloud
 import PLYObject
 
-def main(folderPattern, filters=None, distanceReg=r'(\d+(?:\.\d+))m', resolutionReg=r'(\d+x\d+)'):
+def main(searchFolder, filters=None, distanceReg=r'(\d+(?:\.\d+))m', resolutionReg=r'(\d+x\d+)'):
 	parsedFilters = {}
 	distanceReg = re.compile(distanceReg, re.I)
 	resolutionReg = re.compile(resolutionReg, re.I)
@@ -19,7 +19,7 @@ def main(folderPattern, filters=None, distanceReg=r'(\d+(?:\.\d+))m', resolution
 
 	dataFitErrors = {}
 
-	for folder in glob.glob(folderPattern):
+	for folder in glob.glob(os.path.join(searchFolder, '*')):
 		plyFiles = glob.glob(os.path.join(folder, '*.ply'))
 
 		if not plyFiles:
@@ -62,7 +62,7 @@ def main_cli(args=None):
 	args = parser.parse_args(args)
 
 	t0 = time.perf_counter()
-	main('RealSense-D415-Data-01/Laser/*')
+	main('RealSense-D415-Data-01/Laser/')
 	t1 = time.perf_counter()
 	print('Operation took {:.4f} s'.format(t1 - t0))
 
