@@ -48,7 +48,7 @@ def main(folderPattern, filters=None, distanceReg=r'(\d+(?:\.\d+))m', resolution
 			else:
 				dataFitErrors[resolution][distance].extend(planeFitErrors)
 		except RuntimeError:
-			print('Unable to it plane for every PLY file')
+			print('Unable to fit plane for every PLY file')
 
 		print('')
 
