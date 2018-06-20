@@ -52,7 +52,7 @@ def main(searchFolder, filters=None, distanceReg=r'(\d+(?:\.\d+))m', resolutionR
 
 		print('')
 
-	with open('DataFitErrors.pkl', 'wb') as f:
+	with open(os.path.join(searchFolder, 'DataFitErrors.pkl'), 'wb') as f:
 		pickle.dump(dataFitErrors, f)
 
 	return dataFitErrors
