@@ -107,6 +107,8 @@ def parseFilters(filters):
 		pFilter = PointCloudFilter.fromFilterString(pFilter)
 		pFilters.append(pFilter)
 
+	# TODO: reduce filters to minimal necessary filter set
+
 	return pFilters
 
 def filterPLYObject(ply, filters):
@@ -124,8 +126,6 @@ def filterPLYObject(ply, filters):
 
 def main(plyfiles, filters):
 	pFilters = parseFilters(filters)
-
-	# TODO: reduce filters to minimal necessary filter set
 
 	for plyPath in plyfiles:
 		ply = PLYObject.PLYObject(plyPath)
