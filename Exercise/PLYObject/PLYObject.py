@@ -8,6 +8,7 @@ import scipy.optimize
 
 class PLYObject:
 	def __init__(self, name=None):
+		self.path = name
 		self.plydata = plyfile.PlyData()
 
 		if not name is None:
@@ -17,12 +18,14 @@ class PLYObject:
 		"""
 		Liest die PLY-Datei name ein.
 		"""
+		self.path = name
 		self.plydata = plyfile.PlyData.read(name)
 
 	def write(self, name):
 		"""
 		Speichert das Objekt in der PLY-Datei name ab.
 		"""
+		self.path = name
 		self.plydata.write(name)
 
 	def getVertices(self):
