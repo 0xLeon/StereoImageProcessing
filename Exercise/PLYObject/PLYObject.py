@@ -161,7 +161,7 @@ class PLYObject:
 		result, status = scipy.optimize.leastsq(errorFuncPlane, planeParams, args=(vertices.T,))
 
 		if status not in [1, 2, 3, 4]:
-			raise RuntimeError('Can\'t fit sphere to given data')
+			raise RuntimeError('Can\'t fit plane to given data')
 
 		result = result / -result[3]
 		delta = errorFuncPlane(result, vertices.T)
