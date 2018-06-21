@@ -137,7 +137,7 @@ def main(plyfiles, filters):
 		ply = PLYObject.PLYObject(plyPath)
 		newPly = filterPLYObject(ply, pFilters)
 
-		plyPathPart = os.path.splitext(os.path.abspath(ply))[0]
+		plyPathPart = os.path.splitext(os.path.abspath(plyPath))[0]
 		plyPathNew = '{:s}.filtered.ply'.format(plyPathPart)
 		newPly.write(plyPathNew)
 
