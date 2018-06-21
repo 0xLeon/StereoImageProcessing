@@ -34,11 +34,11 @@ class PointCloudFilter(object):
 
 	def __init__(self, axis, operator, limit):
 		self.axis = axis
-		self.operator = self.__class__.operatorToMethod[operator]
+		self.operator = operator
 		self.limit = limit
 
 	def accept(self, points):
-		return self.operator(points[:, self.axis.value], self.limit)
+		return self.__class__.operatorToMethod[self.operator](points[:, self.axis.value], self.limit)
 
 	@classmethod
 	def fromFilterString(cls, filterStr):
