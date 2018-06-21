@@ -62,7 +62,12 @@ def main_cli(args=None):
 	args = parser.parse_args(args)
 
 	t0 = time.perf_counter()
-	main('RealSense-D415-Data-01/Laser/')
+	main('RealSense-D415-Data-01/Laser/', {
+		2.5: [
+			'x<1.1447',
+			'y<0.58',
+		]
+	})
 	t1 = time.perf_counter()
 	print('Operation took {:.4f} s'.format(t1 - t0))
 
