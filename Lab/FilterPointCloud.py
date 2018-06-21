@@ -22,7 +22,7 @@ class Operator(enum.Enum):
 	NE = '!='
 
 class PointCloudFilter(object):
-	tokenRegex = re.compile(r'(?P<axis>[x-z])(?P<operator>[^\d\-]+)(?P<limit>-?\d+)', re.I)
+	tokenRegex = re.compile(r'(?P<axis>[x-z])(?P<operator>[^\d\-]+)(?P<limit>-?\d+(?:\.\d+))', re.I)
 	operatorToMethod = {
 		Operator.GT: np.ndarray.__gt__,
 		Operator.LT: np.ndarray.__lt__,
