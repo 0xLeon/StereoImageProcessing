@@ -134,13 +134,7 @@ def filterPLYObject(ply, filters, applyGarbageFilter=True, garbageAxis=Axis.Z):
 	return PLYObject.PLYObject.from_vertices(v)
 
 def filterPLYObjects(plyObjects, filters, applyGarbageFilter=True, garbageAxis=Axis.Z):
-	filteredPlyObjects = []
-
-	for ply in plyObjects:
-		newPly = filterPLYObject(ply, filters, applyGarbageFilter, garbageAxis)
-		filteredPlyObjects.append(newPly)
-
-	return filteredPlyObjects
+	return [filterPLYObject(ply, filters, applyGarbageFilter, garbageAxis) for ply in plyObjects]
 
 def main(plyfiles, filters, applyGarbageFilter=True, garbageAxis=Axis.Z):
 	pFilters = parseFilters(filters)
