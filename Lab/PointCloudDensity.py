@@ -3,6 +3,14 @@ import scipy.spatial
 
 import PLYObject
 
+def getRealDensityFromObject(ply):
+	# type: (PLYObject.PLYObject) -> float
+
+	vertices = ply.getVertices().T
+	hull = scipy.spatial.ConvexHull(vertices)
+
+	return vertices.shape[0] / hull.volume
+
 def getRealDensityFromPlane(ply, planeParams=None, returnAlignedPly=False):
 	# type: (PLYObject.PLYObject, tuple) -> float
 
