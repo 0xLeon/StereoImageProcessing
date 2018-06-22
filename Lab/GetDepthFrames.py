@@ -63,7 +63,7 @@ def getDepthFrames(nImages=10, resolution=(1280,720), fps=30, sleepTime=5, laser
 		raise EnvironmentError('Device does not support laser')
 
 	np.savez(
-		os.path.join(outputFolder, 'depthscale.npz'),
+		os.path.join(outputFolder, 'depth.scale.npz'),
 		depthscale=depthSensor.get_depth_scale(),
 	)
 
