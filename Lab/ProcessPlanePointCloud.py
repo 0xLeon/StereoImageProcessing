@@ -32,6 +32,7 @@ def main(searchFolder, filters=None, distanceReg=r'(\d+(?:\.\d+))m', resolutionR
 		pFilters = parsedFilters[distance] if distance in parsedFilters else []
 
 		print('Processing folder {:s}'.format(folderName))
+		print('Filters: {!s}'.format(pFilters))
 		print('n = {:d}'.format(len(plyFiles)))
 
 		fPlyFiles = [FilterPointCloud.filterPLYObject(PLYObject.PLYObject(plyFile), pFilters) for plyFile in plyFiles]
