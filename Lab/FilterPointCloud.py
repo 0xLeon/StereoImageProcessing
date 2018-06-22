@@ -117,10 +117,13 @@ def parseFilters(filters):
 
 	return pFilters
 
-def filterPLYObject(ply, filters):
+def filterPLYObject(ply, filters, applyGarbageFilter=True, garbageAxis=Axis.Z):
 	# type: (PLYObject.PLYObject, List) -> PLYObject.PLYObject
 	v = ply.getVertices().T
-	v = filterGarbage(v)
+
+	if applyGarbageFilter:
+		v = filterGarbage(v, garbageAxis=garbageAxis)
+
 	selector = np.array([True] * v.shape[0])
 
 	for pFilter in filters:
@@ -130,16 +133,26 @@ def filterPLYObject(ply, filters):
 
 	return PLYObject.PLYObject.from_vertices(v)
 
-def main(plyfiles, filters):
+def filterPLYObjects(plyObjects, filters, applyGarbageFilter=True, garbageAxis=Axis.Z):
+	filteredPlyObjects = []
+
+	for ply in plyObjects:
+		newPly = filterPLYObject(ply, filters, applyGarbageFilter, garbageAxis)
+		filteredPlyObjects.append(newPly)
+
+	return filteredPlyObjects
+
+def main(plyfiles, filters, applyGarbageFilter=True, garbageAxis=Axis.Z):
 	pFilters = parseFilters(filters)
+	plyObjects = [PLYObject.PLYObject(plyFile) for plyFile in plyfiles]
+	fPlyObjects = filterPLYObjects(plyObjects, pFilters, applyGarbageFilter, garbageAxis)
 
-	for plyPath in plyfiles:
-		ply = PLYObject.PLYObject(plyPath)
-		newPly = filterPLYObject(ply, pFilters)
-
-		plyPathPart = os.path.splitext(os.path.abspath(plyPath))[0]
+	for ply, fPly in zip(plyObjects, fPlyObjects):
+		plyPathPart = os.path.splitext(os.path.abspath(ply.path))[0]
 		plyPathNew = '{:s}.filtered.ply'.format(plyPathPart)
-		newPly.write(plyPathNew)
+		fPly.write(plyPathNew)
+
+	return fPlyObjects
 
 def main_cli(args=None):
 	parser = argparse.ArgumentParser()
