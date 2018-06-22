@@ -52,9 +52,7 @@ def getRealDensityFromPlane(ply, planeParams=None, returnAlignedPly=False):
 	vertices = U.dot(vertices.T).T
 
 	# Use naiv method to get density
-	vertices = vertices[:, :2]
-
-	hull = scipy.spatial.ConvexHull(vertices)
+	hull = scipy.spatial.ConvexHull(vertices[:, :2])
 	pDensity = vertices.shape[0] / hull.volume
 
 	if returnAlignedPly:
