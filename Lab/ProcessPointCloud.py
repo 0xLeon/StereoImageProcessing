@@ -17,7 +17,7 @@ def main(searchFolder, filters=None, distanceReg=r'(\d+(?:\.\d+))m', resolutionR
 		for distance in filters:
 			parsedFilters[distance] = FilterPointCloud.parseFilters(filters[distance])
 
-	dataFitErrors = {}
+	pcProcessingData = {}
 
 	for folder in glob.glob(os.path.join(searchFolder, '*')):
 		plyFiles = glob.glob(os.path.join(folder, '*.ply'))
@@ -40,22 +40,22 @@ def main(searchFolder, filters=None, distanceReg=r'(\d+(?:\.\d+))m', resolutionR
 
 			print('e = {!s}'.format(planeFitErrors))
 
-			if resolution not in dataFitErrors:
-				dataFitErrors[resolution] = {}
+			if resolution not in pcProcessingData:
+				pcProcessingData[resolution] = {}
 
-			if distance not in dataFitErrors[resolution]:
-				dataFitErrors[resolution][distance] = planeFitErrors
+			if distance not in pcProcessingData[resolution]:
+				pcProcessingData[resolution][distance] = planeFitErrors
 			else:
-				dataFitErrors[resolution][distance].extend(planeFitErrors)
+				pcProcessingData[resolution][distance].extend(planeFitErrors)
 		except RuntimeError:
 			print('Unable to fit plane for every PLY file')
 
 		print('')
 
-	with open(os.path.join(searchFolder, 'PlaneFitErrorData.pkl'), 'wb') as f:
-		pickle.dump(dataFitErrors, f)
+	with open(os.path.join(searchFolder, 'PointCloudProcessingData.pkl'), 'wb') as f:
+		pickle.dump(pcProcessingData, f)
 
-	return dataFitErrors
+	return pcProcessingData
 
 def main_cli(args=None):
 	parser = argparse.ArgumentParser()
