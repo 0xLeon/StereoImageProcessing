@@ -73,6 +73,3 @@ def getNaivDensityFromPlane(ply, alignedAxis=2):
 	# Note: As the hull was calculated in 2D space,
 	# the hull 'volume' is actually the surface area.
 	return v.shape[0] / hull.volume
-
-if __name__ == '__main__':
-	pass
