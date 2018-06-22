@@ -6,6 +6,7 @@ import re
 import time
 
 import FilterPointCloud
+import PointCloudDensity
 import PLYObject
 
 def main(searchFolder, filters=None, distanceReg=r'(\d+(?:\.\d+))m', resolutionReg=r'(\d+x\d+)'):
@@ -36,17 +37,28 @@ def main(searchFolder, filters=None, distanceReg=r'(\d+(?:\.\d+))m', resolutionR
 		fPlyFiles = [FilterPointCloud.filterPLYObject(PLYObject.PLYObject(plyFile), pFilters) for plyFile in plyFiles]
 
 		try:
-			planeFitErrors = [ply.fitPlane()[3] for ply in fPlyFiles]
+			planeFits = [ply.fitPlane() for ply in fPlyFiles]
+			planeFitErrors = [plane[3] for plane in planeFits]
+			pointDensities = [PointCloudDensity.getRealDensityFromPlane(ply, plane) for ply, plane in zip(fPlyFiles, planeFits)]
 
 			print('e = {!s}'.format(planeFitErrors))
+			print('d = {!s}'.format(pointDensities))
 
 			if resolution not in pcProcessingData:
-				pcProcessingData[resolution] = {}
+				pcProcessingData[resolution] = {
+					'planeFitError': {},
+					'pointDensity': {},
+				}
 
-			if distance not in pcProcessingData[resolution]:
-				pcProcessingData[resolution][distance] = planeFitErrors
+			if distance not in pcProcessingData[resolution]['planeFitError']:
+				pcProcessingData[resolution]['planeFitError'][distance] = planeFitErrors
 			else:
-				pcProcessingData[resolution][distance].extend(planeFitErrors)
+				pcProcessingData[resolution]['planeFitError'][distance].extend(planeFitErrors)
+
+			if distance not in pcProcessingData[resolution]['pointDensity']:
+				pcProcessingData[resolution]['pointDensity'][distance] = pointDensities
+			else:
+				pcProcessingData[resolution]['pointDensity'][distance].extend(pointDensities)
 		except RuntimeError:
 			print('Unable to fit plane for every PLY file')
 
@@ -62,7 +74,7 @@ def main_cli(args=None):
 	args = parser.parse_args(args)
 
 	t0 = time.perf_counter()
-	main('RealSense-D415-Data-01/Laser/', {
+	main('RealSense-D415-Data-01-Near/Laser/', {
 		2.5: [
 			'x<1.1447',
 			'y<0.58',
