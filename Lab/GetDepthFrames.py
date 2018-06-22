@@ -69,6 +69,21 @@ def getDepthFrames(nImages=10, resolution=(1280,720), fps=30, sleepTime=5, laser
 
 	counter = 0
 
+	print('Writing depth intrinsics')
+	print('')
+	while True:
+		frames = pipeline.wait_for_frames() # type: rs.frameset
+		alignedFrames = align.process(frames) # type: rs.frameset
+		depth = alignedFrames.get_depth_frame() # type: rs.depth_frame
+
+		if depth:
+			depthIntrinsics = intrinsics_to_dict(depth.get_profile().as_video_stream_profile().get_intrinsics())
+
+			with open(os.path.join(outputFolder, 'depth.intrinsics.pkl'), 'wb') as f:
+				pickle.dump(depthIntrinsics, f)
+
+			break
+
 	while True:
 		print('Waiting for frame {:d}'.format(counter))
 		frames = pipeline.wait_for_frames() # type: rs.frameset
@@ -86,12 +101,9 @@ def getDepthFrames(nImages=10, resolution=(1280,720), fps=30, sleepTime=5, laser
 
 		print('Depth data available')
 		depthImage = np.asanyarray(depth.get_data())
-		depthIntrinsics = intrinsics_to_dict(depth.get_profile().as_video_stream_profile().get_intrinsics())
 
 		print('Writing raw numpy file')
 		np.savez(os.path.join(outputFolder, '{:d}.depth.image.npz'.format(counter)), depthImage=depthImage)
-		with open(os.path.join(outputFolder, '{:d}.depth.intrinsics.pkl'.format(counter)), 'wb') as f:
-			pickle.dump(depthIntrinsics, f)
 
 		print('Generating point cloud')
 		pointcloud.map_to(color)
