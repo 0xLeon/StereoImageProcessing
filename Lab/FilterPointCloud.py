@@ -80,7 +80,7 @@ def filterGarbageOld1(vertices, minJump=5, garbageAxis=Axis.Z):
 
 	return vertices[vertices[:, garbageAxis.value] > limit]
 
-def filterGarbage(vertices, minJump=5, rounds=8, garbageAxis=Axis.Z):
+def filterGarbageOld2(vertices, minJump=5, rounds=8, garbageAxis=Axis.Z):
 	# type: (np.ndarray) -> np.ndarray
 	uv2 = np.unique(np.sort(vertices[:, garbageAxis.value]))
 	duv2 = np.abs(np.diff(uv2))
@@ -105,6 +105,34 @@ def filterGarbage(vertices, minJump=5, rounds=8, garbageAxis=Axis.Z):
 		return vertices[vertices[:, garbageAxis.value] < limit]
 
 	return vertices[vertices[:, garbageAxis.value] > limit]
+
+def filterGarbage(vertices, minJump=5, rounds=8, garbageAxis=Axis.Z):
+	# type: (np.ndarray) -> np.ndarray
+	lastLimMin = np.nan
+	lastLimMax = np.nan
+
+	for _ in range(rounds):
+		uv2, counts = np.unique(np.sort(vertices[:, garbageAxis.value]), return_counts=True)
+		duv2 = np.abs(np.diff(uv2))
+
+		idx = (duv2 > (duv2.mean() * minJump)).nonzero()[0]
+		idx += 1
+
+		suv2 = np.split(uv2, idx)
+		scounts = np.split(counts, idx)
+		binIdx = np.argmax([np.sum(c) for c in scounts])
+
+		limMin = np.min(suv2[binIdx])
+		limMax = np.max(suv2[binIdx])
+
+		if limMin == lastLimMin and limMax == lastLimMax:
+			return vertices
+
+		vertices = vertices[(vertices[:, garbageAxis.value] <= limMax) & (vertices[:, garbageAxis.value] >= limMin)]
+		lastLimMin = limMin
+		lastLimMax = limMax
+
+	return vertices
 
 def parseFilters(filters):
 	pFilters = []
