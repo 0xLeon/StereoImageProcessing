@@ -81,6 +81,17 @@ def main_cli(args=None):
 			'y<0.58',
 		]
 	})
+	main('RealSense-D415-Data-02-Near/Laser', {
+		2.0: [
+			'x>-1.03',
+			'x<1.26',
+		],
+		2.5: [
+			'x>-0.742',
+			'x<1.26',
+			'y>-0.88',
+		],
+	})
 	t1 = time.perf_counter()
 	print('Operation took {:.4f} s'.format(t1 - t0))
 
