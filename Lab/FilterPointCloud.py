@@ -159,6 +159,9 @@ def filterPLYObject(ply, filters, applyGarbageFilter=True, garbageAxis=Axis.Z):
 
 	v = v[selector]
 
+	if applyGarbageFilter:
+		v = filterGarbage(v, garbageAxis=garbageAxis)
+
 	return PLYObject.PLYObject.from_vertices(v)
 
 def filterPLYObjects(plyObjects, filters, applyGarbageFilter=True, garbageAxis=Axis.Z):
