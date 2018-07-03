@@ -3,6 +3,15 @@ import argparse
 import cv2
 import numpy as np
 
+def pixelCost(deltaImg, v, u, d):
+	if u < 0:
+		return 0
+	elif (u - d) < 0:
+		return 0
+
+	# TODO: calculate actual cost
+	return None
+
 def preCalculateCosts(imgL, imgR, numDisp):
 	C = np.zeros((imgL.shape[0], imgL.shape[1], numDisp))
 
