@@ -30,8 +30,9 @@ def main(imgL, imgR, disparityRange=(0, 20), directions=8):
 	imgL = cv2.cvtColor(imgL, cv2.COLOR_BGR2GRAY)
 	imgR = cv2.cvtColor(imgR, cv2.COLOR_BGR2GRAY)
 
+	numDisp = len(range(disparityRange[0], disparityRange[1]))
 
-	C = preCalculateCosts(imgL, imgR, len(range(disparityRange[0], disparityRange[1])))
+	C = preCalculateCosts(imgL, imgR, numDisp)
 
 def main_cli():
 	main('tsukuba_l.png', 'tsukuba_r.png')
