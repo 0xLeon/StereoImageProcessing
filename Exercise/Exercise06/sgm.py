@@ -58,7 +58,7 @@ def main(imgL, imgR, disparityRange=(0, 20), directions=8):
 	for i, direction in enumerate(directionsMapping[directions]):
 		p = direction[1].copy()
 
-		Lr[i, p[:, 1], p[:, 0], :] += C[p[:, 1], p[:, 0], :].T
+		Lr[i, p[:, 1], p[:, 0], :] += C[p[:, 1], p[:, 0], :]
 
 		p += direction[0]
 		p = p[(p[:, 0] > -1) & (p[:, 0] < imgL.shape[1]) & (p[:, 1] > -2) & (p[:, 1] < imgL.shape[0])]
