@@ -14,6 +14,14 @@ def pixelCost(deltaImg, v, u, d):
 
 def preCalculateCosts(imgL, imgR, numDisp):
 	C = np.zeros((imgL.shape[0], imgL.shape[1], numDisp))
+	deltaImg = np.abs(imgL - imgR)
+
+	for v in range(imgL.shape[0]):
+		for u in range(imgL.shape[1]):
+			for d in range(numDisp):
+				C[v, u, d] = pixelCost(deltaImg, v, u, d)
+
+	return C
 
 def main(imgL, imgR, disparityRange=(0, 20), directions=8):
 	imgL = cv2.imread(imgL)
