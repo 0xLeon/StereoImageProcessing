@@ -30,8 +30,6 @@ def main(imgL, imgR, disparityRange=(0, 20), directions=8):
 	imgL = cv2.cvtColor(imgL, cv2.COLOR_BGR2GRAY)
 	imgR = cv2.cvtColor(imgR, cv2.COLOR_BGR2GRAY)
 
-	imgL = imgL.astype(float) / np.iinfo(imgL.dtype).max
-	imgR = imgR.astype(float) / np.iinfo(imgR.dtype).max
 
 	C = preCalculateCosts(imgL, imgR, len(range(disparityRange[0], disparityRange[1])))
 
