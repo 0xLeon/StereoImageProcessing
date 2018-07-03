@@ -76,6 +76,8 @@ def main(imgL, imgR, disparityRange=(0, 20), directions=8):
 					np.argmin(Lr[i, prev[:, 1], prev[:, 0], :]) + P2
 				) - np.argmin(Lr[i, prev[:, 1], prev[:, 0], :])
 
+				Lr[i, p[:, 1], p[:, 0], d] += currLr
+
 			p += direction[0]
 			p = p[(p[:, 0] > -1) & (p[:, 0] < imgL.shape[1]) & (p[:, 1] > -2) & (p[:, 1] < imgL.shape[0])]
 
