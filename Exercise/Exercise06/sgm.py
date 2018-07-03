@@ -67,13 +67,12 @@ def main(imgL, imgR, disparityRange=(0, 20), directions=8):
 			prev = p - direction[0]
 
 			for d in range(numDisp):
-				# TODO: min() won't work, replace with actual working function call
-				currLr = C[p[:, 1], p[:, 0], d] + min(
+				currLr = C[p[:, 1], p[:, 0], d] + np.amin([
 					Lr[i, prev[:, 1], prev[:, 0], d],
 					Lr[i, prev[:, 1], prev[:, 0], d - 1] + P1,
 					Lr[i, prev[:, 1], prev[:, 0], d + 1] + P1,
-					np.argmin(Lr[i, prev[:, 1], prev[:, 0], :], axis=1) + P2
-				) - np.argmin(Lr[i, prev[:, 1], prev[:, 0], :], axis=1)
+					np.argmin(Lr[i, prev[:, 1], prev[:, 0], :], axis=1) + P2,
+				], axis=1) - np.argmin(Lr[i, prev[:, 1], prev[:, 0], :], axis=1)
 
 				Lr[i, p[:, 1], p[:, 0], d] += currLr
 
