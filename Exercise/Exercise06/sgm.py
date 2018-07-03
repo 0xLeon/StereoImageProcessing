@@ -34,6 +34,51 @@ def main(imgL, imgR, disparityRange=(0, 20), directions=8):
 
 	C = preCalculateCosts(imgL, imgR, numDisp)
 
+	# TODO: define borders for diagonal directions
+	# TODO: maybe add support for 16 directions
+	directionsMapping = {
+		8: [
+			(np.array([0, 1]), np.array(list(zip(range(imgL.shape[1]), [0] * imgL.shape[1])))),
+			(np.array([-1, 1]), np.array()),
+			(np.array([-1, 0]), np.array(list(zip([imgL.shape[1] - 1] * imgL.shape[0], range(imgL.shape[0]))))),
+			(np.array([-1, -1]), np.array()),
+			(np.array([0, -1]), np.array(list(zip(range(imgL.shape[1]), [imgL.shape[0] - 1] * imgL.shape[1])))),
+			(np.array([1, -1]), np.array()),
+			(np.array([1, 0]), np.array(list(zip([0] * imgL.shape[0], range(imgL.shape[0]))))),
+			(np.array([1, 1]), np.array()),
+		]
+	}
+
+	Lr = np.zeros((directions, imgL.shape[0], imgL.shape[1], numDisp))
+
+	# TODO: make configurable
+	P1 = 8
+	P2 = 32
+
+	for i, direction in enumerate(directionsMapping[directions]):
+		p = direction[1].copy()
+
+		Lr[i, p[:, 1], p[:, 0], :] += C[p[:, 1], p[:, 0], :].T
+
+		p += direction[0]
+		p = p[(p[:, 0] > -1) & (p[:, 0] < imgL.shape[1]) & (p[:, 1] > -2) & (p[:, 1] < imgL.shape[0])]
+
+		while p.size > 0:
+			prev = p - direction[0]
+
+			for d in range(numDisp):
+				# TODO: min() won't work, replace with actual working function call
+				# TODO: np.argmin() probably won't work, check
+				currLr = C[d, p[:, 1], p[:, 0]] + min(
+					Lr[i, prev[:, 1], prev[:, 0], d],
+					Lr[i, prev[:, 1], prev[:, 0], d - 1] + P1,
+					Lr[i, prev[:, 1], prev[:, 0], d + 1] + P1,
+					np.argmin(Lr[i, prev[:, 1], prev[:, 0], :]) + P2
+				) - np.argmin(Lr[i, prev[:, 1], prev[:, 0], :])
+
+			p += direction[0]
+			p = p[(p[:, 0] > -1) & (p[:, 0] < imgL.shape[1]) & (p[:, 1] > -2) & (p[:, 1] < imgL.shape[0])]
+
 def main_cli():
 	main('tsukuba_l.png', 'tsukuba_r.png')
 
