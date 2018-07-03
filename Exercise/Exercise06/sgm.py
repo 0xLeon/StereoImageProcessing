@@ -30,7 +30,8 @@ def main(imgL, imgR, disparityRange=(0, 20), directions=8):
 	imgL = cv2.cvtColor(imgL, cv2.COLOR_BGR2GRAY)
 	imgR = cv2.cvtColor(imgR, cv2.COLOR_BGR2GRAY)
 
-	numDisp = len(range(disparityRange[0], disparityRange[1]))
+	dispRange = range(disparityRange[0], disparityRange[1])
+	numDisp = len(dispRange)
 
 	C = preCalculateCosts(imgL, imgR, numDisp)
 
