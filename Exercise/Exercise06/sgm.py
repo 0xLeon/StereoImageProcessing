@@ -167,7 +167,7 @@ def sgm(imgL, imgR, p1, p2, disparityRange, directions=8):
 	Lr = np.zeros((directions, imgL.shape[0], imgL.shape[1], numDisp))
 
 	for i, direction in enumerate(paths):
-		p = direction[1].copy()
+		p = direction[1]
 
 		Lr[i, p[:, 1], p[:, 0], :] += C[p[:, 1], p[:, 0], :]
 
