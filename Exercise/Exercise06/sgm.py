@@ -1,9 +1,34 @@
 import argparse
 import decimal
+import time
 
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+
+class TimeMeasurement(object):
+	def __init__(self, operation, printStd=True):
+		self._t0 = 0
+		self._t1 = 0
+
+		self._operation = operation
+		self._printStd = printStd
+
+	@property
+	def delta(self):
+		return self._t1 - self._t0
+
+	def __enter__(self):
+		self._t1 = 0
+		self._t0 = time.perf_counter()
+
+		return self
+
+	def __exit__(self, *args):
+		self._t1 = time.perf_counter()
+
+		if self._printStd:
+			print('Operation \'{!s}\' took {:.4f} s'.format(self._operation, self.delta))
 
 def pixelCostSimple(v, u, d, imgL, imgR):
 	if u < 0:
@@ -92,7 +117,8 @@ def sgm(imgL, imgR, p1, p2, disparityRange, directions=8):
 	dispRange = range(disparityRange[0], disparityRange[1])
 	numDisp = len(dispRange)
 
-	C = preCalculateCosts(imgL, imgR, numDisp)
+	with TimeMeasurement('Pre-calculate costs'):
+		C = preCalculateCosts(imgL, imgR, numDisp)
 
 	# TODO: maybe add support for 16 directions
 	directionsMapping = {
@@ -152,7 +178,8 @@ def main(imgLPath, imgRPath, p1, p2, disparityRange, directions=8):
 	imgL = cv2.imread(imgLPath)
 	imgR = cv2.imread(imgRPath)
 
-	dispImage = sgm(imgL, imgR, p1, p2, disparityRange, directions)
+	with TimeMeasurement('SGM'):
+		dispImage = sgm(imgL, imgR, p1, p2, disparityRange, directions)
 
 	plt.imshow(dispImage)
 	plt.savefig('depth.png')
