@@ -196,7 +196,7 @@ def sgm(imgL, imgR, p1, p2, disparityRange, directions=8):
 
 	return dispImage
 
-def main(imgLPath, imgRPath, p1, p2, disparityRange, directions=8):
+def main(imgLPath, imgRPath, p1, p2, disparityRange, directions=8, outputPath='depth.png'):
 	imgL = cv2.imread(imgLPath)
 	imgR = cv2.imread(imgRPath)
 
@@ -204,7 +204,7 @@ def main(imgLPath, imgRPath, p1, p2, disparityRange, directions=8):
 		dispImage = sgm(imgL, imgR, p1, p2, disparityRange, directions)
 
 	plt.imshow(dispImage)
-	plt.savefig('depth.png')
+	plt.savefig(outputPath)
 
 def main_cli():
 	# TODO: add CLI arguments
