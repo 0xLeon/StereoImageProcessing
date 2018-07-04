@@ -14,24 +14,16 @@ def pixelCost(deltaImg, v, u, d):
 	return None
 
 def preCalculateCosts(imgL, imgR, numDisp):
-	imgRShifted = imgR.copy()
+	imgLShifted = imgL.copy()
+
 	C = np.zeros((imgL.shape[0], imgL.shape[1], numDisp))
-
-	# deltaImg = np.abs(imgL - imgR)
-
-    # for v in range(imgL.shape[0]):
-    #     for u in range(imgL.shape[1]):
-    #         for d in range(numDisp):
-    #             C[v, u, d] = pixelCost(deltaImg, v, u, d)
-
-	C[:, :, 0] = np.abs(imgL - imgRShifted)
+	C[:, :, 0] = np.abs(imgR - imgLShifted)
 
 	for d in range(1, numDisp):
-		# TODO: maybe +inf is a better value?
-		imgRShifted[:1] = 0
-		imgRShifted[1:] = imgRShifted[:-1]
+		imgLShifted[:, :-1] = imgLShifted[:, 1:]
+		imgLShifted[:, -1:] = 0
 
-		C[:, :, d] = np.abs(imgL - imgRShifted)
+		C[:, :, d] = np.abs(imgR - imgLShifted)
 
 	return C
 
