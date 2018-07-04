@@ -110,6 +110,39 @@ def preCalculateCosts(imgL, imgR, numDisp):
 
 	return C
 
+def generatePaths(imgShape, directions=8):
+	if directions not in [2**x for x in range(5)]:
+		raise ValueError('Invalid number of directions {:d}'.format(directions))
+
+	paths = [
+		(np.array([-1, 0]), np.array(list(zip([imgShape[1] - 1] * imgShape[0], range(imgShape[0]))))),
+	]
+
+	if directions > 1:
+		paths.extend([
+			(np.array([1, 0]), np.array(list(zip([0] * imgShape[0], range(imgShape[0]))))),
+		])
+
+	if directions > 2:
+		paths.extend([
+			(np.array([0, -1]), np.array(list(zip(range(imgShape[1]), [imgShape[0] - 1] * imgShape[1])))),
+			(np.array([0, 1]), np.array(list(zip(range(imgShape[1]), [0] * imgShape[1])))),
+		])
+
+	if directions > 4:
+		paths.extend([
+			(np.array([-1, -1]), np.vstack((np.array(list(zip(range(imgShape[1]), [imgShape[0] - 1] * imgShape[1]))), np.array(list(zip([imgShape[1] - 1] * (imgShape[0] - 1), range(imgShape[0] - 1))))))),
+			(np.array([1, -1]), np.vstack((np.array(list(zip(range(imgShape[1]), [imgShape[0] - 1] * imgShape[1]))), np.array(list(zip([0] * (imgShape[0] - 1), range(imgShape[0] - 1))))))),
+			(np.array([1, 1]), np.vstack((np.array(list(zip(range(imgShape[1]), [0] * imgShape[1]))), np.array(list(zip([0] * (imgShape[0] - 1), range(imgShape[0] - 1))))))),
+			(np.array([-1, 1]), np.vstack((np.array(list(zip(range(imgShape[1]), [0] * imgShape[1]))), np.array(list(zip([imgShape[1] - 1] * (imgShape[0] - 1), range(1, imgShape[0] + 1))))))),
+		])
+
+	if directions > 8:
+		# TODO: implement 16 directions
+		raise NotImplementedError('Paths for {:d} directions not implemented'.format(directions))
+
+	return paths
+
 def sgm(imgL, imgR, p1, p2, disparityRange, directions=8):
 	imgL = cv2.cvtColor(imgL, cv2.COLOR_BGR2GRAY).astype(np.float)
 	imgR = cv2.cvtColor(imgR, cv2.COLOR_BGR2GRAY).astype(np.float)
@@ -117,26 +150,15 @@ def sgm(imgL, imgR, p1, p2, disparityRange, directions=8):
 	dispRange = range(disparityRange[0], disparityRange[1])
 	numDisp = len(dispRange)
 
+	with TimeMeasurement('Generate paths'):
+		paths = generatePaths(imgL.shape, directions)
+
 	with TimeMeasurement('Pre-calculate costs'):
 		C = preCalculateCosts(imgL, imgR, numDisp)
 
-	# TODO: maybe add support for 16 directions
-	directionsMapping = {
-		8: [
-			(np.array([0, 1]), np.array(list(zip(range(imgL.shape[1]), [0] * imgL.shape[1])))),
-			(np.array([-1, 1]), np.vstack((np.array(list(zip(range(imgL.shape[1]), [0] * imgL.shape[1]))), np.array(list(zip([imgL.shape[1] - 1] * (imgL.shape[0] - 1), range(1, imgL.shape[0] + 1))))))),
-			(np.array([-1, 0]), np.array(list(zip([imgL.shape[1] - 1] * imgL.shape[0], range(imgL.shape[0]))))),
-			(np.array([-1, -1]), np.vstack((np.array(list(zip(range(imgL.shape[1]), [imgL.shape[0] - 1] * imgL.shape[1]))), np.array(list(zip([imgL.shape[1] - 1] * (imgL.shape[0] - 1), range(imgL.shape[0] - 1))))))),
-			(np.array([0, -1]), np.array(list(zip(range(imgL.shape[1]), [imgL.shape[0] - 1] * imgL.shape[1])))),
-			(np.array([1, -1]), np.vstack((np.array(list(zip(range(imgL.shape[1]), [imgL.shape[0] - 1] * imgL.shape[1]))), np.array(list(zip([0] * (imgL.shape[0] - 1), range(imgL.shape[0] - 1))))))),
-			(np.array([1, 0]), np.array(list(zip([0] * imgL.shape[0], range(imgL.shape[0]))))),
-			(np.array([1, 1]), np.vstack((np.array(list(zip(range(imgL.shape[1]), [0] * imgL.shape[1]))), np.array(list(zip([0] * (imgL.shape[0] - 1), range(imgL.shape[0] - 1))))))),
-		]
-	}
-
 	Lr = np.zeros((directions, imgL.shape[0], imgL.shape[1], numDisp))
 
-	for i, direction in enumerate(directionsMapping[directions]):
+	for i, direction in enumerate(paths):
 		p = direction[1].copy()
 
 		Lr[i, p[:, 1], p[:, 0], :] += C[p[:, 1], p[:, 0], :]
