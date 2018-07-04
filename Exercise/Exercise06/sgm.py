@@ -211,6 +211,8 @@ def main(imgLPath, imgRPath, p1, p2, disparityRange, directions=8, outputPath='d
 	imgL = cv2.cvtColor(imgL, cv2.COLOR_BGR2GRAY)
 	imgR = cv2.cvtColor(imgR, cv2.COLOR_BGR2GRAY)
 
+	print('Calculating disparity map with SGM using {:d} directions'.format(directions))
+
 	with TimeMeasurement('SGM'):
 		dispImage = sgm(imgL, imgR, p1, p2, disparityRange, directions)
 
