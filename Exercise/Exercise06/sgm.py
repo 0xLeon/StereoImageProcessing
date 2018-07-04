@@ -31,12 +31,12 @@ class TimeMeasurement(object):
 			print('Operation \'{!s}\' took {:.4f} s'.format(self._operation, self.delta))
 
 def pixelCostSimple(v, u, d, imgL, imgR):
-	if u < 0:
-		return 0
-	elif (u - d) < 0:
-		return 0
+	ud = u + d
 
-	return np.abs(imgL[v, u] - imgR[v, u - d])
+	if ud >= imgL.shape[1]:
+		ud = imgL.shape[1] - 1
+
+	return np.abs(imgL[v, ud] - imgR[v, u])
 
 def pixelCostGithub(row, leftCol, rightCol, imgL, imgR):
 	leftValue = 0
