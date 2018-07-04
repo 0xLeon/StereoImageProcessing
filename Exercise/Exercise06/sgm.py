@@ -68,10 +68,11 @@ def main(imgL, imgR, disparityRange=(0, 20), directions=8):
 			minPrevD = Lr[i, prev[:, 1], prev[:, 0], :].min(axis=1)
 
 			for d in range(numDisp):
+				# TODO: check if wrap-around if out-of-range disparities is correct
 				currLr = C[p[:, 1], p[:, 0], d] + np.amin([
 					Lr[i, prev[:, 1], prev[:, 0], d],
 					Lr[i, prev[:, 1], prev[:, 0], d - 1] + P1,
-					Lr[i, prev[:, 1], prev[:, 0], d + 1] + P1,
+					Lr[i, prev[:, 1], prev[:, 0], (d + 1) % numDisp] + P1,
 					minPrevD + P2,
 				], axis=0) - minPrevD
 
