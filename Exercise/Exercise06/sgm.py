@@ -65,14 +65,15 @@ def main(imgL, imgR, disparityRange=(0, 20), directions=8):
 
 		while p.size > 0:
 			prev = p - direction[0]
+			minPrevD = np.min(Lr[i, prev[:, 1], prev[:, 0], :], axis=1)
 
 			for d in range(numDisp):
 				currLr = C[p[:, 1], p[:, 0], d] + np.amin([
 					Lr[i, prev[:, 1], prev[:, 0], d],
 					Lr[i, prev[:, 1], prev[:, 0], d - 1] + P1,
 					Lr[i, prev[:, 1], prev[:, 0], d + 1] + P1,
-					np.min(Lr[i, prev[:, 1], prev[:, 0], :], axis=1) + P2,
-				], axis=1) - np.min(Lr[i, prev[:, 1], prev[:, 0], :], axis=1)
+					minPrevD + P2,
+				], axis=1) - minPrevD
 
 				Lr[i, p[:, 1], p[:, 0], d] += currLr
 
