@@ -4,14 +4,13 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
-def pixelCost(deltaImg, v, u, d):
+def pixelCostSimple(v, u, d, imgL, imgR):
 	if u < 0:
 		return 0
 	elif (u - d) < 0:
 		return 0
 
-	# TODO: calculate actual cost
-	return None
+	return np.abs(imgL[v, u] - imgR[v, u - d])
 
 def preCalculateCosts(imgL, imgR, numDisp):
 	imgLShifted = imgL.copy()
