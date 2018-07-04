@@ -144,7 +144,7 @@ def sgm(imgL, imgR, p1, p2, disparityRange, directions=8):
 			p = p[(p[:, 0] > -1) & (p[:, 0] < imgL.shape[1]) & (p[:, 1] > -2) & (p[:, 1] < imgL.shape[0])]
 
 	S = Lr.sum(axis=0)
-	dispImage = S.min(axis=2)
+	dispImage = S.argmin(axis=2)
 
 	return dispImage
 
