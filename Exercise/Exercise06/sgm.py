@@ -123,11 +123,18 @@ def sgm(imgL, imgR, p1, p2, disparityRange, directions=8):
 			minPrevD = Lr[i, prev[:, 1], prev[:, 0], :].min(axis=1)
 
 			for d in range(numDisp):
-				# TODO: check if wrap-around if out-of-range disparities is correct
+				dPrev = d - 1
+				dNext = d + 1
+
+				if dPrev < 0:
+					dPrev = d
+				elif dNext >= numDisp:
+					dNext = d
+
 				currLr = C[p[:, 1], p[:, 0], d] + np.amin([
 					Lr[i, prev[:, 1], prev[:, 0], d],
-					Lr[i, prev[:, 1], prev[:, 0], d - 1] + p1,
-					Lr[i, prev[:, 1], prev[:, 0], (d + 1) % numDisp] + p1,
+					Lr[i, prev[:, 1], prev[:, 0], dPrev] + p1,
+					Lr[i, prev[:, 1], prev[:, 0], dNext] + p1,
 					minPrevD + p2,
 				], axis=0) - minPrevD
 
