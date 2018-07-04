@@ -187,14 +187,12 @@ def sgm(imgL, imgR, p1, p2, disparityRange, directions=8):
 				elif dNext >= numDisp:
 					dNext = d
 
-				currLr = C[p[:, 1], p[:, 0], d] + np.amin([
+				Lr[i, p[:, 1], p[:, 0], d] = C[p[:, 1], p[:, 0], d] + np.amin([
 					Lr[i, prev[:, 1], prev[:, 0], d],
 					Lr[i, prev[:, 1], prev[:, 0], dPrev] + p1,
 					Lr[i, prev[:, 1], prev[:, 0], dNext] + p1,
 					minPrevD + p2,
 				], axis=0) - minPrevD
-
-				Lr[i, p[:, 1], p[:, 0], d] += currLr
 
 			p += direction[0]
 			p = p[(p[:, 0] > -1) & (p[:, 0] < imgL.shape[1]) & (p[:, 1] > -2) & (p[:, 1] < imgL.shape[0])]
