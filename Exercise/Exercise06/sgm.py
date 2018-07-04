@@ -12,6 +12,16 @@ def pixelCostSimple(v, u, d, imgL, imgR):
 
 	return np.abs(imgL[v, u] - imgR[v, u - d])
 
+def preCalculateCostsSimple(imgL, imgR, numDisp):
+	C = np.zeros((imgL.shape[0], imgL.shape[1], numDisp))
+
+	for v in range(imgL.shape[0]):
+		for u in range(imgL.shape[1]):
+			for d in range(numDisp):
+				C[v, u, d] = pixelCostSimple(v, u, d, imgL, imgR)
+
+	return C
+
 def preCalculateCosts(imgL, imgR, numDisp):
 	imgLShifted = imgL.copy()
 
