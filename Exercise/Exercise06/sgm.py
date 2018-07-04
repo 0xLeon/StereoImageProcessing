@@ -208,6 +208,12 @@ def main(imgLPath, imgRPath, p1, p2, disparityRange, directions=8, outputPath='d
 	imgL = cv2.imread(imgLPath)
 	imgR = cv2.imread(imgRPath)
 
+	if imgL is None:
+		raise ValueError('Image file {:s} not readable or not an image'.format(imgLPath))
+
+	if imgR is None:
+		raise ValueError('Image file {:s} not readable or not an image'.format(imgRPath))
+
 	imgL = cv2.cvtColor(imgL, cv2.COLOR_BGR2GRAY)
 	imgR = cv2.cvtColor(imgR, cv2.COLOR_BGR2GRAY)
 
