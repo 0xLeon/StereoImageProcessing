@@ -227,7 +227,15 @@ def main(imgLPath, imgRPath, p1, p2, disparityRange, directions=8, outputPath='d
 
 def main_cli():
 	# TODO: add CLI arguments
-	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 8)
+	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 1, 'depth.01.png')
+	print('')
+	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 2, 'depth.02.png')
+	print('')
+	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 4, 'depth.04.png')
+	print('')
+	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 8, 'depth.08.png')
+	print('')
+	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 16, 'depth.16.png')
 
 if __name__ == '__main__':
 	main_cli()
