@@ -35,10 +35,7 @@ def preCalculateCosts(imgL, imgR, numDisp):
 
 	return C
 
-def main(imgL, imgR, disparityRange=(0, 20), directions=8):
-	imgL = cv2.imread(imgL)
-	imgR = cv2.imread(imgR)
-
+def sgm(imgL, imgR, p1, p2, disparityRange, directions=8):
 	imgL = cv2.cvtColor(imgL, cv2.COLOR_BGR2GRAY)
 	imgR = cv2.cvtColor(imgR, cv2.COLOR_BGR2GRAY)
 
@@ -63,10 +60,6 @@ def main(imgL, imgR, disparityRange=(0, 20), directions=8):
 
 	Lr = np.zeros((directions, imgL.shape[0], imgL.shape[1], numDisp))
 
-	# TODO: make configurable
-	P1 = 8
-	P2 = 32
-
 	for i, direction in enumerate(directionsMapping[directions]):
 		p = direction[1].copy()
 
@@ -83,9 +76,9 @@ def main(imgL, imgR, disparityRange=(0, 20), directions=8):
 				# TODO: check if wrap-around if out-of-range disparities is correct
 				currLr = C[p[:, 1], p[:, 0], d] + np.amin([
 					Lr[i, prev[:, 1], prev[:, 0], d],
-					Lr[i, prev[:, 1], prev[:, 0], d - 1] + P1,
-					Lr[i, prev[:, 1], prev[:, 0], (d + 1) % numDisp] + P1,
-					minPrevD + P2,
+					Lr[i, prev[:, 1], prev[:, 0], d - 1] + p1,
+					Lr[i, prev[:, 1], prev[:, 0], (d + 1) % numDisp] + p1,
+					minPrevD + p2,
 				], axis=0) - minPrevD
 
 				Lr[i, p[:, 1], p[:, 0], d] += currLr
@@ -96,13 +89,20 @@ def main(imgL, imgR, disparityRange=(0, 20), directions=8):
 	S = Lr.sum(axis=0)
 	dispImage = S.min(axis=2)
 
+	return dispImage
+
+def main(imgLPath, imgRPath, p1, p2, disparityRange, directions=8):
+	imgL = cv2.imread(imgLPath)
+	imgR = cv2.imread(imgRPath)
+
+	dispImage = sgm(imgL, imgR, p1, p2, disparityRange, directions)
+
 	plt.imshow(dispImage)
 	plt.savefig('depth.png')
 
-	return dispImage
-
 def main_cli():
-	main('tsukuba_l.png', 'tsukuba_r.png')
+	# TODO: add CLI arguments
+	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 8)
 
 if __name__ == '__main__':
 	main_cli()
