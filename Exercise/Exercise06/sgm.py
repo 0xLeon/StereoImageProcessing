@@ -144,8 +144,8 @@ def generatePaths(imgShape, directions=8):
 	return paths
 
 def sgm(imgL, imgR, p1, p2, disparityRange, directions=8):
-	imgL = cv2.cvtColor(imgL, cv2.COLOR_BGR2GRAY).astype(np.float)
-	imgR = cv2.cvtColor(imgR, cv2.COLOR_BGR2GRAY).astype(np.float)
+	imgL = imgL.astype(np.float)
+	imgR = imgR.astype(np.float)
 
 	dispRange = range(disparityRange[0], disparityRange[1])
 	numDisp = len(dispRange)
@@ -199,6 +199,9 @@ def sgm(imgL, imgR, p1, p2, disparityRange, directions=8):
 def main(imgLPath, imgRPath, p1, p2, disparityRange, directions=8, outputPath='depth.png'):
 	imgL = cv2.imread(imgLPath)
 	imgR = cv2.imread(imgRPath)
+
+	imgL = cv2.cvtColor(imgL, cv2.COLOR_BGR2GRAY)
+	imgR = cv2.cvtColor(imgR, cv2.COLOR_BGR2GRAY)
 
 	with TimeMeasurement('SGM'):
 		dispImage = sgm(imgL, imgR, p1, p2, disparityRange, directions)
