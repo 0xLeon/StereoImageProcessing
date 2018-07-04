@@ -12,6 +12,41 @@ def pixelCostSimple(v, u, d, imgL, imgR):
 
 	return np.abs(imgL[v, u] - imgR[v, u - d])
 
+def pixelCostGithub(row, leftCol, rightCol, imgL, imgR):
+	leftValue = 0
+	rightValue = 0
+	beforeRightValue = 0
+	afterRightValue = 0
+	rightValueMinus = 0
+	rightValuePlus = 0
+	rightValueMin = 0
+	rightValueMax = 0
+
+	if leftCol >= 0:
+		leftValue = imgL[row, leftCol]
+
+	if rightCol >= 0:
+		rightValue = imgR[row, rightCol]
+
+
+	if rightCol > 0:
+		beforeRightValue = imgR[row, rightCol - 1]
+	else:
+		beforeRightValue = rightValue
+
+	if rightCol > 0 and (rightCol + 1) < imgR.shape[1]:
+		afterRightValue = imgR[row, rightCol + 1]
+	else:
+		afterRightValue = rightValue
+
+	rightValueMinus = int(decimal.Decimal((rightValue + beforeRightValue) / 2.0).quantize(0, decimal.ROUND_HALF_UP))
+	rightValuePlus = int(decimal.Decimal((rightValue + afterRightValue) / 2.0).quantize(0, decimal.ROUND_HALF_UP))
+
+	rightValueMin = np.min([rightValue, rightValueMinus, rightValuePlus])
+	rightValueMax = np.max([rightValue, rightValueMinus, rightValuePlus])
+
+	return np.max([0, leftValue - rightValueMax, rightValueMin - leftValue])
+
 def preCalculateCostsSimple(imgL, imgR, numDisp):
 	C = np.zeros((imgL.shape[0], imgL.shape[1], numDisp))
 
@@ -19,6 +54,19 @@ def preCalculateCostsSimple(imgL, imgR, numDisp):
 		for u in range(imgL.shape[1]):
 			for d in range(numDisp):
 				C[v, u, d] = pixelCostSimple(v, u, d, imgL, imgR)
+
+	return C
+
+def preCalculateCostsGithub(imgL, imgR, numDisp):
+	C = np.zeros((imgL.shape[0], imgL.shape[1], numDisp))
+
+	for v in range(imgL.shape[0]):
+		for u in range(imgL.shape[1]):
+			for d in range(numDisp):
+				C[v, u, d] = np.min([
+					pixelCostGithub(v, u, u - d, imgL, imgR),
+					pixelCostGithub(v, u - d, u, imgR, imgL),
+				])
 
 	return C
 
