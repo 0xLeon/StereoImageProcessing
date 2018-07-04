@@ -73,7 +73,7 @@ def main(imgL, imgR, disparityRange=(0, 20), directions=8):
 					Lr[i, prev[:, 1], prev[:, 0], d - 1] + P1,
 					Lr[i, prev[:, 1], prev[:, 0], d + 1] + P1,
 					minPrevD + P2,
-				], axis=1) - minPrevD
+				], axis=0) - minPrevD
 
 				Lr[i, p[:, 1], p[:, 0], d] += currLr
 
