@@ -134,7 +134,7 @@ def generatePaths(imgShape, directions=8):
 			(np.array([-1, -1]), np.vstack((np.array(list(zip(range(imgShape[1]), [imgShape[0] - 1] * imgShape[1]))), np.array(list(zip([imgShape[1] - 1] * (imgShape[0] - 1), range(imgShape[0] - 1))))))),
 			(np.array([1, -1]), np.vstack((np.array(list(zip(range(imgShape[1]), [imgShape[0] - 1] * imgShape[1]))), np.array(list(zip([0] * (imgShape[0] - 1), range(imgShape[0] - 1))))))),
 			(np.array([1, 1]), np.vstack((np.array(list(zip(range(imgShape[1]), [0] * imgShape[1]))), np.array(list(zip([0] * (imgShape[0] - 1), range(imgShape[0] - 1))))))),
-			(np.array([-1, 1]), np.vstack((np.array(list(zip(range(imgShape[1]), [0] * imgShape[1]))), np.array(list(zip([imgShape[1] - 1] * (imgShape[0] - 1), range(1, imgShape[0] + 1))))))),
+			(np.array([-1, 1]), np.vstack((np.array(list(zip(range(imgShape[1]), [0] * imgShape[1]))), np.array(list(zip([imgShape[1] - 1] * (imgShape[0] - 1), range(1, imgShape[0]))))))),
 		])
 
 	if directions > 8:
