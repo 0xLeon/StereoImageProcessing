@@ -225,8 +225,7 @@ def main(imgLPath, imgRPath, p1, p2, disparityRange, directions=8, outputPath='d
 	plt.imshow(dispImage)
 	plt.savefig(outputPath)
 
-def main_cli():
-	# TODO: add CLI arguments
+def main_example():
 	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 1, 'depth.01.png')
 	print('')
 	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 2, 'depth.02.png')
@@ -236,6 +235,27 @@ def main_cli():
 	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 8, 'depth.08.png')
 	print('')
 	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 16, 'depth.16.png')
+
+def main_cli(args=None):
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--output', default='./depth.png')
+	parser.add_argument('--p1', default=8)
+	parser.add_argument('--p2', default=32)
+	parser.add_argument('--directions', default=8, choices=[1, 2, 4, 8, 16])
+	parser.add_argument('--disparityrange', default='0,20')
+	parser.add_argument('--examples', default=False, action='store_true')
+	parser.add_argument('images', default=['tsukuba_l.png', 'tsukuba_r.png'], nargs='*')
+	args = parser.parse_args(args)
+
+	if args.examples:
+		return main_example()
+
+	if len(args.images) != 2:
+		parser.error('Specifiy exactly two images!')
+
+	disparityrange = tuple(map(int, args.disparityrange.split(',')))
+
+	main(args.images[0], args.images[1], args.p1, args.p2, disparityrange, args.directions, args.output)
 
 if __name__ == '__main__':
 	main_cli()
