@@ -1,6 +1,7 @@
 import argparse
 
 import cv2
+import matplotlib.pyplot as plt
 import numpy as np
 
 def pixelCost(deltaImg, v, u, d):
@@ -94,6 +95,11 @@ def main(imgL, imgR, disparityRange=(0, 20), directions=8):
 
 	S = Lr.sum(axis=0)
 	dispImage = S.min(axis=2)
+
+	plt.imshow(dispImage)
+	plt.savefig('depth.png')
+
+	return dispImage
 
 def main_cli():
 	main('tsukuba_l.png', 'tsukuba_r.png')
