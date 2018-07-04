@@ -138,8 +138,16 @@ def generatePaths(imgShape, directions=8):
 		])
 
 	if directions > 8:
-		# TODO: implement 16 directions
-		raise NotImplementedError('Paths for {:d} directions not implemented'.format(directions))
+		paths.extend([
+			(np.array([-2, -1]), np.vstack((np.array(list(zip(range(imgShape[1]), [imgShape[0] - 1] * imgShape[1]))), np.array(list(zip(([imgShape[1] - 1] * (imgShape[0] - 1)) + ([imgShape[1] - 2] * (imgShape[0] - 1)), list(range(imgShape[0] - 1)) * 2)))))),
+			(np.array([-1, -2]), np.vstack((np.array(list(zip(list(range(imgShape[1])) * 2, ([imgShape[0] - 1] * imgShape[1]) + ([imgShape[0] - 2] * imgShape[1])))), np.array(list(zip([imgShape[1] - 1] * (imgShape[0] - 2), range(imgShape[0] - 2))))))),
+			(np.array([1, -2]), np.vstack((np.array(list(zip(list(range(imgShape[1])) * 2, ([imgShape[0] - 1] * imgShape[1]) + ([imgShape[0] - 2] * imgShape[1])))), np.array(list(zip([0] * (imgShape[0] - 2), range(imgShape[0] - 2))))))),
+			(np.array([2, -1]), np.vstack((np.array(list(zip(range(imgShape[1]), [imgShape[0] - 1] * imgShape[1]))), np.array(list(zip(([0] * (imgShape[0] - 1)) + ([1] * (imgShape[0] - 1)), list(range(1, imgShape[0])) * 2)))))),
+			(np.array([2, 1]), np.vstack((np.array(list(zip(range(imgShape[1]), [0] * imgShape[1]))), np.array(list(zip(([0] * (imgShape[0] - 1)) + ([1] * (imgShape[0] - 1)), list(range(1, imgShape[0])) * 2)))))),
+			(np.array([1, 2]), np.vstack((np.array(list(zip(list(range(imgShape[1])) * 2, ([0] * imgShape[1]) + ([1] * imgShape[1])))), np.array(list(zip([0] * (imgShape[0] - 2), range(2, imgShape[0]))))))),
+			(np.array([-1, 2]), np.vstack((np.array(list(zip(list(range(imgShape[1])) * 2, ([0] * imgShape[1]) + ([1] * imgShape[1])))), np.array(list(zip([imgShape[1] - 1] * (imgShape[0] - 2), range(2, imgShape[0]))))))),
+			(np.array([-2, 1]), np.vstack((np.array(list(zip(range(imgShape[1]), [0] * imgShape[1]))), np.array(list(zip(([imgShape[1] - 1] * (imgShape[0] - 1)) + ([imgShape[1] - 2] * (imgShape[0] - 1)), list(range(1, imgShape[0])) * 2)))))),
+		])
 
 	return paths
 
