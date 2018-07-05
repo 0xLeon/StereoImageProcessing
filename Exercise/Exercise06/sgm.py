@@ -154,7 +154,7 @@ def sgm(imgL, imgR, p1, p2, disparityRange, directions=8):
 	imgL = imgL.astype(np.float)
 	imgR = imgR.astype(np.float)
 
-	dispRange = range(disparityRange[0], disparityRange[1])
+	dispRange = range(disparityRange[0], disparityRange[1] + 1)
 	numDisp = len(dispRange)
 
 	with TimeMeasurement('Generate paths'):
