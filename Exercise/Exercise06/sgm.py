@@ -104,7 +104,6 @@ def preCalculateCosts(imgL, imgR, numDisp):
 
 	for d in range(1, numDisp):
 		imgLShifted[:, :-1] = imgLShifted[:, 1:]
-		imgLShifted[:, -1:] = 0
 
 		C[:, :, d] = np.abs(imgR - imgLShifted)
 
