@@ -1,5 +1,7 @@
 import argparse
 import decimal
+import itertools
+import multiprocessing
 import time
 
 import cv2
@@ -149,7 +151,41 @@ def generatePaths(imgShape, directions=8):
 
 	return paths
 
-def sgm(imgL, imgR, p1, p2, disparityRange, directions=8):
+def _sgm_inner(direction, C, numDisp, p1, p2):
+	p = direction[1]
+
+	Lr = np.zeros_like(C)
+	Lr[p[:, 1], p[:, 0], :] += C[p[:, 1], p[:, 0], :]
+
+	p += direction[0]
+	p = p[(p[:, 0] > -1) & (p[:, 0] < C.shape[1]) & (p[:, 1] > -1) & (p[:, 1] < C.shape[0])]
+
+	while p.size > 0:
+		prev = p - direction[0]
+		minPrevD = Lr[prev[:, 1], prev[:, 0], :].min(axis=1)
+
+		for d in range(numDisp):
+			dPrev = d - 1
+			dNext = d + 1
+
+			if dPrev < 0:
+				dPrev = d
+			elif dNext >= numDisp:
+				dNext = d
+
+			Lr[p[:, 1], p[:, 0], d] = C[p[:, 1], p[:, 0], d] + np.amin([
+				Lr[prev[:, 1], prev[:, 0], d],
+				Lr[prev[:, 1], prev[:, 0], dPrev] + p1,
+				Lr[prev[:, 1], prev[:, 0], dNext] + p1,
+				minPrevD + p2,
+			], axis=0) - minPrevD
+
+		p += direction[0]
+		p = p[(p[:, 0] > -1) & (p[:, 0] < C.shape[1]) & (p[:, 1] > -2) & (p[:, 1] < C.shape[0])]
+
+	return Lr
+
+def sgm(imgL, imgR, p1, p2, disparityRange, directions=8, parallel=True):
 	imgL = imgL.astype(np.float)
 	imgR = imgR.astype(np.float)
 
@@ -162,45 +198,33 @@ def sgm(imgL, imgR, p1, p2, disparityRange, directions=8):
 	with TimeMeasurement('Pre-calculate costs'):
 		C = preCalculateCosts(imgL, imgR, numDisp)
 
-	Lr = np.zeros((directions, imgL.shape[0], imgL.shape[1], numDisp))
+	if directions > 1:
+		if parallel:
+			workPackages = zip(
+				paths,
+				itertools.repeat(C),
+				itertools.repeat(numDisp),
+				itertools.repeat(p1),
+				itertools.repeat(p2),
+			)
 
-	for i, direction in enumerate(paths):
-		p = direction[1]
+			with multiprocessing.Pool(min(multiprocessing.cpu_count(), directions)) as pool:
+				Lr = pool.starmap(_sgm_inner, workPackages)
+		else:
+			Lr = np.zeros((directions, imgL.shape[0], imgL.shape[1], numDisp))
 
-		Lr[i, p[:, 1], p[:, 0], :] += C[p[:, 1], p[:, 0], :]
+			for i, direction in enumerate(paths):
+				Lr[i, :, :, :] += _sgm_inner(direction, C, numDisp, p1, p2)
 
-		p += direction[0]
-		p = p[(p[:, 0] > -1) & (p[:, 0] < imgL.shape[1]) & (p[:, 1] > -1) & (p[:, 1] < imgL.shape[0])]
+		S = np.sum(Lr, axis=0)
+	else:
+		S = _sgm_inner(paths[0], C, numDisp, p1, p2)
 
-		while p.size > 0:
-			prev = p - direction[0]
-			minPrevD = Lr[i, prev[:, 1], prev[:, 0], :].min(axis=1)
-
-			for d in range(numDisp):
-				dPrev = d - 1
-				dNext = d + 1
-
-				if dPrev < 0:
-					dPrev = d
-				elif dNext >= numDisp:
-					dNext = d
-
-				Lr[i, p[:, 1], p[:, 0], d] = C[p[:, 1], p[:, 0], d] + np.amin([
-					Lr[i, prev[:, 1], prev[:, 0], d],
-					Lr[i, prev[:, 1], prev[:, 0], dPrev] + p1,
-					Lr[i, prev[:, 1], prev[:, 0], dNext] + p1,
-					minPrevD + p2,
-				], axis=0) - minPrevD
-
-			p += direction[0]
-			p = p[(p[:, 0] > -1) & (p[:, 0] < imgL.shape[1]) & (p[:, 1] > -2) & (p[:, 1] < imgL.shape[0])]
-
-	S = Lr.sum(axis=0)
 	dispImage = S.argmin(axis=2)
 
 	return dispImage
 
-def main(imgLPath, imgRPath, p1, p2, disparityRange, directions=8, outputPath='depth.png'):
+def main(imgLPath, imgRPath, p1, p2, disparityRange, directions=8, outputPath='depth.png', parallel=True):
 	imgL = cv2.imread(imgLPath)
 	imgR = cv2.imread(imgRPath)
 
@@ -215,22 +239,32 @@ def main(imgLPath, imgRPath, p1, p2, disparityRange, directions=8, outputPath='d
 
 	print('Calculating disparity map with SGM using {:d} directions'.format(directions))
 
-	with TimeMeasurement('SGM'):
-		dispImage = sgm(imgL, imgR, p1, p2, disparityRange, directions)
+	with TimeMeasurement('SGM{:s}'.format(' Parallel' if parallel else '')):
+		dispImage = sgm(imgL, imgR, p1, p2, disparityRange, directions, parallel)
 
 	dispImage = ((dispImage.astype(np.float) / dispImage.max()) * np.iinfo(np.uint16).max).astype(np.uint16)
 	cv2.imwrite(outputPath, dispImage)
 
 def main_example():
-	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 1, 'depth.01.png')
+	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 1, 'depth.01.lin.png', False)
 	print('')
-	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 2, 'depth.02.png')
+	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 1, 'depth.01.par.png', True)
 	print('')
-	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 4, 'depth.04.png')
+	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 2, 'depth.02.lin.png', False)
 	print('')
-	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 8, 'depth.08.png')
+	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 2, 'depth.02.par.png', True)
 	print('')
-	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 16, 'depth.16.png')
+	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 4, 'depth.04.lin.png', False)
+	print('')
+	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 4, 'depth.04.par.png', True)
+	print('')
+	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 8, 'depth.08.lin.png', False)
+	print('')
+	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 8, 'depth.08.par.png', True)
+	print('')
+	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 16, 'depth.16.lin.png', False)
+	print('')
+	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 16, 'depth.16.par.png', True)
 
 def main_cli(args=None):
 	parser = argparse.ArgumentParser()
