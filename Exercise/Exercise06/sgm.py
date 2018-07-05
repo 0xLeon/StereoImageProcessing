@@ -75,7 +75,7 @@ def pixelCostGithub(row, leftCol, rightCol, imgL, imgR):
 	return np.max([0, leftValue - rightValueMax, rightValueMin - leftValue])
 
 def preCalculateCostsSimple(imgL, imgR, numDisp):
-	C = np.zeros((imgL.shape[0], imgL.shape[1], numDisp))
+	C = np.zeros(imgL.shape + (numDisp,))
 
 	for v in range(imgL.shape[0]):
 		for u in range(imgL.shape[1]):
@@ -85,7 +85,7 @@ def preCalculateCostsSimple(imgL, imgR, numDisp):
 	return C
 
 def preCalculateCostsGithub(imgL, imgR, numDisp):
-	C = np.zeros((imgL.shape[0], imgL.shape[1], numDisp))
+	C = np.zeros(imgL.shape + (numDisp,))
 
 	for v in range(imgL.shape[0]):
 		for u in range(imgL.shape[1]):
@@ -100,7 +100,7 @@ def preCalculateCostsGithub(imgL, imgR, numDisp):
 def preCalculateCosts(imgL, imgR, numDisp):
 	imgLShifted = imgL.copy()
 
-	C = np.zeros((imgL.shape[0], imgL.shape[1], numDisp))
+	C = np.zeros(imgL.shape + (numDisp,))
 	C[:, :, 0] = np.abs(imgR - imgLShifted)
 
 	for d in range(1, numDisp):
@@ -211,7 +211,7 @@ def sgm(imgL, imgR, p1, p2, disparityRange, directions=8, parallel=True):
 			with multiprocessing.Pool(min(multiprocessing.cpu_count(), directions)) as pool:
 				Lr = pool.starmap(_sgm_inner, workPackages)
 		else:
-			Lr = np.zeros((directions, imgL.shape[0], imgL.shape[1], numDisp))
+			Lr = np.zeros((directions,) + C.shape)
 
 			for i, direction in enumerate(paths):
 				Lr[i, :, :, :] += _sgm_inner(direction, C, numDisp, p1, p2)
