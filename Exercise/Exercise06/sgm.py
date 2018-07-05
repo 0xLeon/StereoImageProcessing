@@ -171,7 +171,7 @@ def sgm(imgL, imgR, p1, p2, disparityRange, directions=8):
 		Lr[i, p[:, 1], p[:, 0], :] += C[p[:, 1], p[:, 0], :]
 
 		p += direction[0]
-		p = p[(p[:, 0] > -1) & (p[:, 0] < imgL.shape[1]) & (p[:, 1] > -2) & (p[:, 1] < imgL.shape[0])]
+		p = p[(p[:, 0] > -1) & (p[:, 0] < imgL.shape[1]) & (p[:, 1] > -1) & (p[:, 1] < imgL.shape[0])]
 
 		while p.size > 0:
 			prev = p - direction[0]
