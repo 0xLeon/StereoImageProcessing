@@ -236,9 +236,9 @@ def main_example():
 def main_cli(args=None):
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--output', default='./depth.png')
-	parser.add_argument('--p1', default=8)
-	parser.add_argument('--p2', default=32)
-	parser.add_argument('--directions', default=8, choices=[1, 2, 4, 8, 16])
+	parser.add_argument('--p1', type=int, default=8)
+	parser.add_argument('--p2', type=int, default=32)
+	parser.add_argument('--directions', type=int, default=8, choices=[1, 2, 4, 8, 16])
 	parser.add_argument('--disparityrange', default='0,20')
 	parser.add_argument('--examples', default=False, action='store_true')
 	parser.add_argument('images', default=['tsukuba_l.png', 'tsukuba_r.png'], nargs='*')
