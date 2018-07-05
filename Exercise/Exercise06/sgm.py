@@ -75,7 +75,7 @@ def pixelCostGithub(row, leftCol, rightCol, imgL, imgR):
 	return np.max([0, leftValue - rightValueMax, rightValueMin - leftValue])
 
 def preCalculateCostsSimple(imgL, imgR, numDisp):
-	C = np.zeros(imgL.shape + (numDisp,))
+	C = np.empty(imgL.shape + (numDisp,))
 
 	for v in range(imgL.shape[0]):
 		for u in range(imgL.shape[1]):
@@ -85,7 +85,7 @@ def preCalculateCostsSimple(imgL, imgR, numDisp):
 	return C
 
 def preCalculateCostsGithub(imgL, imgR, numDisp):
-	C = np.zeros(imgL.shape + (numDisp,))
+	C = np.empty(imgL.shape + (numDisp,))
 
 	for v in range(imgL.shape[0]):
 		for u in range(imgL.shape[1]):
@@ -100,7 +100,7 @@ def preCalculateCostsGithub(imgL, imgR, numDisp):
 def preCalculateCosts(imgL, imgR, numDisp):
 	imgLShifted = imgL.copy()
 
-	C = np.zeros(imgL.shape + (numDisp,))
+	C = np.empty(imgL.shape + (numDisp,))
 	C[:, :, 0] = np.abs(imgR - imgLShifted)
 
 	for d in range(1, numDisp):
