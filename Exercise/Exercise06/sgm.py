@@ -219,8 +219,8 @@ def main(imgLPath, imgRPath, p1, p2, disparityRange, directions=8, outputPath='d
 	with TimeMeasurement('SGM'):
 		dispImage = sgm(imgL, imgR, p1, p2, disparityRange, directions)
 
-	plt.imshow(dispImage)
-	plt.savefig(outputPath)
+	dispImage = ((dispImage.astype(np.float) / dispImage.max()) * np.iinfo(np.uint16).max).astype(np.uint16)
+	cv2.imwrite(outputPath, dispImage)
 
 def main_example():
 	main('tsukuba_l.png', 'tsukuba_r.png', 8, 32, (0, 20), 1, 'depth.01.png')
