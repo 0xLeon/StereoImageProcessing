@@ -181,7 +181,7 @@ def _sgm_inner(direction, C, numDisp, p1, p2):
 			], axis=0) - minPrevD
 
 		p += direction[0]
-		p = p[(p[:, 0] > -1) & (p[:, 0] < C.shape[1]) & (p[:, 1] > -2) & (p[:, 1] < C.shape[0])]
+		p = p[(p[:, 0] > -1) & (p[:, 0] < C.shape[1]) & (p[:, 1] > -1) & (p[:, 1] < C.shape[0])]
 
 	return Lr
 
