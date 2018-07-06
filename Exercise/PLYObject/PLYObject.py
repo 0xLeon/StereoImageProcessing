@@ -271,7 +271,7 @@ class PLYObject:
 
 		for x in xrange:
 			for z in zrange:
-				y = (-planeParams[0] * x - planeParams[2] * z - planeParams[3]) / planeParams[1]
+				y = (-planeParams[0] * x - planeParams[2] * z + 1) / planeParams[1]
 
 				vertices.append((float(x), y, float(z)))
 
