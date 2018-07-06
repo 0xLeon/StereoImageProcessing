@@ -42,7 +42,7 @@ def main(searchFolder, filters=None, distanceReg=r'(\d+(?:\.\d+))m', resolutionR
 		try:
 			planeFits = [ply.fitPlane() for ply in fPlyFiles]
 			planeFitErrors = [plane[3] for plane in planeFits]
-			planeFitErrorStds = [((ply.getVertices().T.dot(planeParams[:3]) + planeParams[3]) / np.linalg.norm(planeParams[:3])).std() for ply, planeParams in zip(fPlyFiles, planeFits)]
+			planeFitErrorStds = [((ply.getVertices().T.dot(planeParams[:3]) + 1) / np.linalg.norm(planeParams[:3])).std() for ply, planeParams in zip(fPlyFiles, planeFits)]
 			pointDensities = [PointCloudDensity.getRealDensityFromPlane(ply, plane) for ply, plane in zip(fPlyFiles, planeFits)]
 
 			print('e = {!s}'.format(planeFitErrors))
