@@ -37,7 +37,7 @@ def main(searchFolder, filters=None, distanceReg=r'(\d+(?:\.\d+))m', resolutionR
 		print('Filters: {!s}'.format(pFilters))
 		print('n = {:d}'.format(len(plyFiles)))
 
-		fPlyFiles = [FilterPointCloud.filterPLYObject(PLYObject.PLYObject(plyFile), pFilters) for plyFile in plyFiles]
+		fPlyFiles = FilterPointCloud.main(plyFiles, pFilters)
 
 		try:
 			planeFits = [ply.fitPlane() for ply in fPlyFiles]
