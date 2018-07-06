@@ -1,3 +1,5 @@
+# Copyright (C) 2018 Stefan Hahn <stefan.hahn@hu-berlin.de>, Andre Niendorf <niendora@hu-berlin.de>
+
 import numpy as np
 import scipy.spatial
 

@@ -1,5 +1,7 @@
 RealSense D415
 
+Stefan Hahn <stefan.hahn@hu-berlin.de>, Andre Niendorf <niendora@hu-berlin.de>
+
 Ordner:
  - DataAcquisition: Beinhaltet Batchfiles und Symlinks zur Aufnahme von Datensets
  - Plots: Beinhaltet die Plots für die drei Datensets als PNG-Dateien
