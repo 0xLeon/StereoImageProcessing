@@ -23,7 +23,7 @@ def main(searchFolder, filters=None, distanceReg=r'(\d+(?:\.\d+))m', resolutionR
 	pcProcessingData = {}
 
 	for folder in glob.glob(os.path.join(searchFolder, '*')):
-		plyFiles = glob.glob(os.path.join(folder, '*.ply'))
+		plyFiles = glob.glob(os.path.join(folder, '*.pointcloud.ply'))
 
 		if not plyFiles:
 			continue
