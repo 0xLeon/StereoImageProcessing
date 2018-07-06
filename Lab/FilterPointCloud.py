@@ -148,7 +148,7 @@ def parseFilters(filters):
 def filterPLYObject(ply, filters, applyGarbageFilter=True, garbageAxis=Axis.Z):
 	# type: (PLYObject.PLYObject, List) -> PLYObject.PLYObject
 	v = ply.getVertices().T
-	selector = np.array([True] * v.shape[0])
+	selector = np.full(v.shape[0], True)
 
 	for pFilter in filters:
 		selector = selector & pFilter.accept(v)
