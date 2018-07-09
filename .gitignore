@@ -107,6 +107,8 @@ ENV/
 *_*.ply
 *output.ply
 **/output/*
+**/Exercise07/*/*.png
+**/Exercise07/*/*.jpg
 **/data/*
 Lab/*-Data-*/*
 *.pointcloud.ply
