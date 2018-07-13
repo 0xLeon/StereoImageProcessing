@@ -121,9 +121,9 @@ def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix'
 	plt.ylabel('True label')
 	plt.xlabel('Predicted label')
 
-def main():
+def main(folder='.', plot=False):
 	with TimeMeasurement('Find Images'):
-		images, labels, encoder = findImages()
+		images, labels, encoder = findImages(folder)
 
 	with TimeMeasurement('Extract Features'):
 		images = [extractFeature(image) for image in images]
@@ -143,16 +143,22 @@ def main():
 	print('Train Score: {:.2f}'.format(classifier.score(images_train, labels_train) * 100))
 	print('Test Score: {:.2f}'.format(classifier.score(images_test, labels_test) * 100))
 
-	cnf = sklearn.metrics.confusion_matrix(labels_test, labels_predicted)
+	if plot:
+		cnf = sklearn.metrics.confusion_matrix(labels_test, labels_predicted)
 
-	plt.figure()
-	plot_confusion_matrix(cnf, encoder.classes_, False)
-	plt.show()
+		plt.figure()
+		plot_confusion_matrix(cnf, encoder.classes_, False)
+		plt.show()
 
 	return
 
-def main_cli():
-	main()
+def main_cli(args=None):
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--plot', action='store_true', default=False)
+	parser.add_argument('folder', nargs='?', default='.')
+	args = parser.parse_args(args)
+
+	main(args.folder, args.plot)
 
 if __name__ == '__main__':
 	main_cli()
