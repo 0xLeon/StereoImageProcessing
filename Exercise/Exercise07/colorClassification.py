@@ -63,13 +63,31 @@ def extractFeature(image):
 	except ValueError:
 		pass
 
+	imgLab = cv2.cvtColor(img.astype(np.float32), cv2.COLOR_BGR2Lab)
+
 	meanBgr = img.mean(axis=(0, 1))[np.newaxis, np.newaxis, :].astype(np.float32)
 	meanLab = cv2.cvtColor(meanBgr, cv2.COLOR_BGR2Lab)
 	meanHsv = cv2.cvtColor(meanBgr, cv2.COLOR_BGR2HSV)
 
+	# Try to eliminate white background
+	# This feature is actually unused due to poor performance on the dataset
+	# Problem is probably lots of other stuff in the background
+	meanBgrNoBackground = img[img.mean(axis=2) < 0.9, :].mean(axis=0)[np.newaxis, np.newaxis, :].astype(np.float32)
+	meanLabNoBackground = cv2.cvtColor(meanBgrNoBackground, cv2.COLOR_BGR2Lab)
+	meanHsvNoBackground = cv2.cvtColor(meanBgrNoBackground, cv2.COLOR_BGR2HSV)
+
+	# Get the a*b* values for the center pixel
+	# This feature is actually unused due to poor performance on the dataset
+	# Problem is pobably lots of other stuff in the background and fruits not being centered
+	centerPoint = (np.array(img.shape[:2]) / 2).astype(int)
+	centerLab = imgLab[centerPoint[0], centerPoint[1]]
+
 	return np.fromiter(itertools.chain(
 		meanLab[0, 0, 1:],
 		meanHsv[0, 0, :1],
+		# meanLabNoBackground[0, 0, 1:],
+		# meanHsvNoBackground[0, 0, :1],
+		# centerLab[1:]
 	), np.float)
 
 def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
