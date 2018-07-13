@@ -49,6 +49,23 @@ def findImages(directory='.'):
 
 	return imageSet, imageSetLabels, labelEncoder
 
+def extractFeature(image):
+	img = cv2.imread(image, cv2.IMREAD_ANYDEPTH | cv2.IMREAD_COLOR)
+
+	if img is None:
+		return None
+
+	try:
+		img = img.astype(np.float) / np.iinfo(img.dtype).max
+	except ValueError:
+		pass
+
+	meanBgr = img.mean(axis=(0, 1))[np.newaxis, np.newaxis, :].astype(np.float32)
+	meanLab = cv2.cvtColor(meanBgr, cv2.COLOR_BGR2Lab)
+	meanHsv = cv2.cvtColor(meanBgr, cv2.COLOR_BGR2HSV)
+
+	return np.array([meanLab[0, 0, 1], meanLab[0, 0, 2], meanHsv[0, 0, 0], ])
+
 def main():
 	with TimeMeasurement('Find Images'):
 		images, labels, encoder = findImages()
