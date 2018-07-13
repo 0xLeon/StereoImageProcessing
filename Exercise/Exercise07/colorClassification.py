@@ -67,7 +67,10 @@ def extractFeature(image):
 	meanLab = cv2.cvtColor(meanBgr, cv2.COLOR_BGR2Lab)
 	meanHsv = cv2.cvtColor(meanBgr, cv2.COLOR_BGR2HSV)
 
-	return np.array([meanLab[0, 0, 1], meanLab[0, 0, 2], meanHsv[0, 0, 0], ])
+	return np.fromiter(itertools.chain(
+		meanLab[0, 0, 1:],
+		meanHsv[0, 0, :1],
+	), np.float)
 
 def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
 	"""
