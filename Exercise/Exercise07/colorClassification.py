@@ -143,11 +143,6 @@ def main():
 	print('Train Score: {:.2f}'.format(classifier.score(images_train, labels_train) * 100))
 	print('Test Score: {:.2f}'.format(classifier.score(images_test, labels_test) * 100))
 
-	print('Accuracy: {:.2f}'.format(sklearn.metrics.accuracy_score(labels_test, labels_predicted) * 100))
-	print('Precision: {:.2f}'.format(sklearn.metrics.precision_score(labels_test, labels_predicted, average='micro') * 100))
-	print('Recall: {:.2f}'.format(sklearn.metrics.recall_score(labels_test, labels_predicted, average='micro') * 100))
-	print('F1: {:.2f}'.format(sklearn.metrics.f1_score(labels_test, labels_predicted, average='micro') * 100))
-
 	cnf = sklearn.metrics.confusion_matrix(labels_test, labels_predicted)
 
 	plt.figure()
