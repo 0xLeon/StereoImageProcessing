@@ -10,6 +10,7 @@ import numpy as np
 import sklearn
 import sklearn.model_selection
 import sklearn.preprocessing
+import sklearn.svm
 
 class TimeMeasurement(object):
 	def __init__(self, operation, printStd=True):
@@ -69,6 +70,21 @@ def extractFeature(image):
 def main():
 	with TimeMeasurement('Find Images'):
 		images, labels, encoder = findImages()
+
+	with TimeMeasurement('Extract Features'):
+		images = [extractFeature(image) for image in images]
+
+	images_train, images_test, labels_train, labels_test = sklearn.model_selection.train_test_split(images, labels, test_size=0.33, random_state=42)
+
+	classifier = sklearn.svm.SVC()
+
+	with TimeMeasurement('Train'):
+		classifier.fit(images_train, labels_train)
+
+	print('')
+
+	print('Train Score: {:.2f}'.format(classifier.score(images_train, labels_train) * 100))
+	print('Test Score: {:.2f}'.format(classifier.score(images_test, labels_test) * 100))
 
 	return
 
